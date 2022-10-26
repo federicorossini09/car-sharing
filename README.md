@@ -1,7 +1,6 @@
-## TP para la materia Seminario de Ing. en Informática I
-## 75.71 
-## Facultad de Ingeniería
-## Universidad de Buenos Aires
+### 75.71 Seminario de Ing. en Informática I
+### Facultad de Ingeniería
+### Universidad de Buenos Aires
 
 
 ### Requisitos
