@@ -1,4 +1,4 @@
-
+grails.plugin.springsecurity.useBasicAuth = true
 
 // Added by the Spring Security Core plugin:
 grails.plugin.springsecurity.userLookup.userDomainClassName = 'example.grails.User'
@@ -14,7 +14,9 @@ grails.plugin.springsecurity.controllerAnnotations.staticRules = [
 	[pattern: '/**/js/**',       access: ['permitAll']],
 	[pattern: '/**/css/**',      access: ['permitAll']],
 	[pattern: '/**/images/**',   access: ['permitAll']],
-	[pattern: '/**/favicon.ico', access: ['permitAll']]
+	[pattern: '/**/favicon.ico', access: ['permitAll']],
+	[pattern: '/registration', access: ['permitAll']],
+	[pattern: '/registration/index', access: ['permitAll']],
 ]
 
 grails.plugin.springsecurity.filterChain.chainMap = [
@@ -25,4 +27,6 @@ grails.plugin.springsecurity.filterChain.chainMap = [
 	[pattern: '/**/favicon.ico', filters: 'none'],
 	[pattern: '/**',             filters: 'JOINED_FILTERS']
 ]
+
+grails.plugin.springsecurity.successHandler.defaultTargetUrl = '/home'
 
