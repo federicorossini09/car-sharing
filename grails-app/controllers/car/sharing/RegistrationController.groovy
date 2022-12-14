@@ -1,6 +1,6 @@
 package car.sharing
 
-import example.grails.User
+
 import grails.plugin.springsecurity.annotation.Secured
 import grails.validation.ValidationException
 

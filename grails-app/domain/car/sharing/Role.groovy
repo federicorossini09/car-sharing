@@ -1,4 +1,4 @@
-package example.grails
+package car.sharing
 
 import groovy.transform.EqualsAndHashCode
 import groovy.transform.ToString

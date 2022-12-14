@@ -1,6 +1,6 @@
 package car.sharing
 
-import example.grails.User
+
 import grails.gorm.services.Service
 import grails.gorm.transactions.Transactional
 
