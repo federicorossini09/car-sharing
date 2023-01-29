@@ -8,18 +8,18 @@ class Car {
     String year
     String brand
     String model
-    String version
+    String variant
     Date vtvExpirationDate
 
 
-    Car(String licensePlate){
+    Car(String licensePlate, String year, String brand, String model, String variant, Date vtvExpirationDate){
         if(!licensePlate)
             throw new CarCreationException("License Plate is empty")
         this.licensePlate = licensePlate
         this.year = year
         this.brand = brand
         this.model = model
-        this.version = version
+        this.variant = variant
         this.vtvExpirationDate = vtvExpirationDate
     }
 
