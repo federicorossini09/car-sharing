@@ -1,6 +1,6 @@
 package car.sharing
 
-import car.sharing.exceptions.CarCreationException
+import java.time.LocalDateTime
 
 class Car {
 
@@ -9,11 +9,10 @@ class Car {
     String brand
     String model
     String variant
-    Date vtvExpirationDate
+    LocalDateTime vtvExpirationDate
 
 
     static constraints = {
         licensePlate nullable: false, blank: false
-
     }
 }
