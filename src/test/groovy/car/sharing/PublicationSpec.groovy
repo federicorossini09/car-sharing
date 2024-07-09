@@ -1,18 +1,37 @@
 package car.sharing
 
 import grails.testing.gorm.DomainUnitTest
+import spock.lang.Shared
 import spock.lang.Specification
+
+import java.time.Instant
+import java.time.Period
 
 class PublicationSpec extends Specification implements DomainUnitTest<Publication> {
 
+    @Shared Car car
+    @Shared Host host
+    @Shared User user
+
     def setup() {
+        user = new User(username: "username1", password: "password")
+        host = new Host(user: user)
+        car = new Car(year: 2018, brand: 'Ford', model: 'Focus', variant: '1.6 Titanium', vtvExpirationDate: Instant.now() + Period.ofDays(5), kilometers: 50000, licensePlate: "AC933WP")
     }
 
     def cleanup() {
     }
 
-    void "test something"() {
-        expect:"fix me"
-            true == false
+    void "publication creation success"() {
+        given: "an existing car"
+        when: "a publication is created"
+            def newPublication = new Publication(host: host, car: car)
+            def newPublicationIsValid = newPublication.validate()
+        then: "the publication is created successfully"
+            newPublicationIsValid
+        and: "with a car associated"
+            newPublication.car.brand == car.brand
+        and: "with a host associated"
+            newPublication.host.user.username == host.user.username
     }
 }
