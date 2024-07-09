@@ -114,4 +114,12 @@ class CarSpec extends Specification implements DomainUnitTest<Car> {
         !validCar && car.errors.getFieldError().getField() == "kilometers"
     }
 
+    void "car creation success"() {
+        when: "a car is created with valid data"
+            def car = new Car(brand: brand, year: year, model: model, variant: variant, vtvExpirationDate: vtvExpirationDate, licensePlate: licensePlate, kilometers: kilometers)
+            def carIsValid = car.validate()
+        then: "a valid car is created successfully"
+            carIsValid
+    }
+
 }
