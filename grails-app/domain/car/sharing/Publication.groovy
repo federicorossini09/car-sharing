@@ -2,7 +2,7 @@ package car.sharing
 
 class Publication {
 
-    Host host
+    static belongsTo = [host: Host]
     Car car
     PublicationStatus status = PublicationStatus.PENDING
     List requests

@@ -3,7 +3,7 @@ package car.sharing
 class Host {
 
     User user
-    List<Publication> publications = []
+    static hasMany = [publications: Publication]
 
     static constraints = {
     }
