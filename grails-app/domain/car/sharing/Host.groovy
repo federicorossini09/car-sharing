@@ -12,7 +12,7 @@ class Host {
 
         def newPublication = new Publication(host: this, car: car)
 
-        this.publications.add(newPublication)
+        this.publications = [newPublication]
 
         newPublication
     }
