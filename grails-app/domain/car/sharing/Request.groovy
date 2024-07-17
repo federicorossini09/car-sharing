@@ -12,6 +12,8 @@ class Request {
     Date endDate
     RequestStatus status
     static belongsTo = [guest: Guest]
+    static hasOne = [rent: Rent]
+
 
     Request(Publication publication, String deliveryPlace, String returnPlace, String startDate, String endDate, Guest guest) {
         this.status = RequestStatus.WAITING
@@ -26,6 +28,11 @@ class Request {
         if (publication.areDatesValid(this.startDate, this.endDate)) {
             publication.addRequest(this)
         }
+    }
+
+    def accept() {
+        this.status = RequestStatus.ACCEPTED
+        this.rent = new Rent()
     }
 
 

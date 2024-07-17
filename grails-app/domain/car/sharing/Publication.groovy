@@ -19,7 +19,7 @@ class Publication {
     def acceptRequest(Request requestToAccept) {
         //aca ver si recibimos el id o se puede directamente el request
         if (areDatesValid(requestToAccept.startDate, requestToAccept.endDate)) {
-            requestToAccept.status = RequestStatus.ACCEPTED
+            requestToAccept.accept()
         }
 
     }
