@@ -12,13 +12,22 @@ class Publication {
     static hasMany = [requests: Request]
 
 
+    static embedded = ['car', 'price']
+
     static constraints = {
-        car validator: {it.validate()}
-        price validator: {it.validate()}
     }
 
-    Price updatePrice(Integer newValue) {
-        this.price.updateFinalValue(newValue)
+    Publication updatePrice(BigDecimal newValue) {
+        price.updateFinalValue(newValue)
+        this
+    }
+
+    def publish() {
+        this.setStatus(PublicationStatus.ACTIVE)
+    }
+
+    def unPublish() {
+        this.setStatus(PublicationStatus.PENDING)
     }
 
     def acceptRequest(Request requestToAccept) {

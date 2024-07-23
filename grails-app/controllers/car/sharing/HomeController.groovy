@@ -7,22 +7,10 @@ import grails.plugin.springsecurity.userdetails.GrailsUser
 @Secured('isAuthenticated()')
 class HomeController {
 
-    SpringSecurityService springSecurityService
+    PublicationService publicationService
 
     def index() {
-        return [username: loggedUsername()]
+        [activePublications: publicationService.getActivePublications()]
     }
 
-    String loggedUsername() {
-        if ( springSecurityService.principal == null ) {
-            return null
-        }
-        if ( springSecurityService.principal instanceof String ) {
-            return springSecurityService.principal
-        }
-        if ( springSecurityService.principal instanceof GrailsUser ) {
-            return ((GrailsUser) springSecurityService.principal).username
-        }
-        null
-    }
 }

@@ -78,8 +78,7 @@ class Price {
         result
     }
 
-    Price updateFinalValue(Integer newFinalValue) {
-        this.finalValue = newFinalValue
-        this
+    def updateFinalValue(BigDecimal newFinalValue) {
+        this.setFinalValue(newFinalValue)
     }
 }
