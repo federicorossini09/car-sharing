@@ -52,6 +52,24 @@ class PublicationSpec extends Specification implements DomainUnitTest<Publicatio
         publication.price.finalValue == 110
     }
 
+    void "publish success"() {
+        given: "an existing pending publication"
+        def publication = new Publication(host: host, car: car, price: price)
+        when: "it's published"
+        publication.publish()
+        then: "its status is change to active"
+        publication.status == PublicationStatus.ACTIVE
+    }
+
+    void "unpublish success"() {
+        given: "an existing active publication"
+        def publication = new Publication(host: host, car: car, price: price, status: PublicationStatus.ACTIVE)
+        when: "it's unpublished"
+        publication.unpublish()
+        then: "its status is change to pending"
+        publication.status == PublicationStatus.PENDING
+    }
+
     void "request accept success"() {
         given: "an existing car"
         when: "a publication is created"

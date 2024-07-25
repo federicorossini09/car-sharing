@@ -1,7 +1,6 @@
 package car.sharing
 
-import java.time.Instant
-import java.time.ZoneOffset
+import java.time.LocalDate
 
 class Price {
 
@@ -44,7 +43,7 @@ class Price {
 
     private static BigDecimal applyYearPenalty(BigDecimal value, Integer year) {
 
-        Integer currentYear = Instant.now().atOffset(ZoneOffset.UTC).getYear();
+        Integer currentYear = LocalDate.now().getYear();
 
         Integer yearDiff = currentYear - year;
 

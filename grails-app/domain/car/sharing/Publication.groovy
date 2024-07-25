@@ -26,12 +26,11 @@ class Publication {
         this.setStatus(PublicationStatus.ACTIVE)
     }
 
-    def unPublish() {
+    def unpublish() {
         this.setStatus(PublicationStatus.PENDING)
     }
 
     def acceptRequest(Request requestToAccept) {
-        //aca ver si recibimos el id o se puede directamente el request
         if (areDatesAvailable(requestToAccept.startDate, requestToAccept.endDate)) {
             requestToAccept.accept()
         }
