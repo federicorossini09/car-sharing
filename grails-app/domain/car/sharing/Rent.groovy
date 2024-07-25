@@ -5,4 +5,13 @@ class Rent {
 
     static constraints = {
     }
+
+    boolean cancel() {
+        this.status = RentStatus.CANCELED
+    }
+
+    boolean isScheduledOrActive() {
+        return (this.status == RentStatus.SCHEDULED | this.status == RentStatus.ACTIVE)
+    }
+
 }

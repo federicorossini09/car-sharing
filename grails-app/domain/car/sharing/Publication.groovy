@@ -1,14 +1,13 @@
 package car.sharing
 
-import java.text.DateFormat
-import java.text.SimpleDateFormat
+import java.time.LocalDate
 
 class Publication {
 
     static belongsTo = [host: Host]
     Car car
     PublicationStatus status = PublicationStatus.PENDING
-    List requests = []
+    List<Request> requests = []
     static hasMany = [requests: Request]
 
 
@@ -18,10 +17,9 @@ class Publication {
 
     def acceptRequest(Request requestToAccept) {
         //aca ver si recibimos el id o se puede directamente el request
-        if (areDatesValid(requestToAccept.startDate, requestToAccept.endDate)) {
+        if (areDatesAvailable(requestToAccept.startDate, requestToAccept.endDate)) {
             requestToAccept.accept()
         }
-
     }
 
     void addRequest(Request new_request) {
@@ -32,13 +30,13 @@ class Publication {
         return requests.size()
     }
 
-    boolean areDatesValid(Date startDate, Date endDate) {
-        for (request in requests) {
-            if (request.status == RequestStatus.ACCEPTED && (request.dateCollision(startDate) | request.dateCollision(endDate))) {
-                return false
-            }
-        }
-        return true
+
+    List getRents() {
+        this.requests.findAll { it.rent }.collect { it.rent }
+    }
+
+    boolean areDatesAvailable(LocalDate startDate, LocalDate endDate) {
+        requests.every { request -> !request.isOccupying(startDate, endDate) }
     }
 
 }

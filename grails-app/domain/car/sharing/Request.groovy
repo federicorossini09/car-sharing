@@ -1,34 +1,19 @@
 package car.sharing
 
-import java.text.DateFormat
-import java.text.SimpleDateFormat
-
+import java.time.LocalDate
 
 class Request {
 
     String deliveryPlace
     String returnPlace
-    Date startDate
-    Date endDate
-    RequestStatus status
+    LocalDate startDate
+    LocalDate endDate
     static belongsTo = [guest: Guest]
-    static hasOne = [rent: Rent]
+    Rent rent
+    RequestStatus status = RequestStatus.WAITING
 
 
-    Request(Publication publication, String deliveryPlace, String returnPlace, String startDate, String endDate, Guest guest) {
-        this.status = RequestStatus.WAITING
-        this.deliveryPlace = deliveryPlace
-        this.returnPlace = returnPlace
-        this.startDate = stringToDate(startDate)
-        this.endDate = stringToDate(endDate)
-        this.guest = guest
-        //le pregunto a la publicacion si esta disponible en mis fechas, sino no me puedo construir
-        //y creo un self con lo recibido por parametro
-        //y llamo desde aca a publicacion.request
-        if (publication.areDatesValid(this.startDate, this.endDate)) {
-            publication.addRequest(this)
-        }
-    }
+
 
     def accept() {
         this.status = RequestStatus.ACCEPTED
@@ -36,14 +21,8 @@ class Request {
     }
 
 
-    def stringToDate(String dateString) {
-        def datePattern = "yyyy-MM-dd"; // define the desired date/time format
-        DateFormat formatter = new SimpleDateFormat(datePattern);
-        return formatter.parse(dateString)
-    }
-
-    def dateCollision(Date date) {
-        return date > this.startDate && date < this.endDate
+    def dateCollision(LocalDate date) {
+        return date >= this.startDate && date <= this.endDate
     }
 
     static constraints = {
@@ -51,5 +30,11 @@ class Request {
         returnPlace blank: false
         startDate blank: false
         endDate blank: false
+        rent nullable: true
+    }
+
+    boolean isOccupying(LocalDate startDate, LocalDate endDate) {
+        return this.rent && this.rent.isScheduledOrActive()
+                && (this.dateCollision(startDate) | this.dateCollision(endDate))
     }
 }

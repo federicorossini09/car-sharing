@@ -5,6 +5,7 @@ import spock.lang.Shared
 import spock.lang.Specification
 
 import java.time.Instant
+import java.time.LocalDate
 import java.time.Period
 
 class PublicationSpec extends Specification implements DomainUnitTest<Publication> {
@@ -35,18 +36,6 @@ class PublicationSpec extends Specification implements DomainUnitTest<Publicatio
             newPublication.host.user.username == host.user.username
     }
 
-    void "publication request success"() {
-        given: "an existing car"
-        when: "a publication is created"
-            def newPublication = new Publication(host: host, car: car)
-            def newPublicationIsValid = newPublication.validate()
-        and: "a request is sent by a Guest"
-            def guest = new Guest(user: user)
-            def request = new Request(newPublication, "place1", "place2", "2024-01-01", "2024-01-03", guest)
-        then: "publication requests size is 1"
-            newPublication.lengthOfRequests() == 1
-    }
-
     void "request accept success"() {
         given: "an existing car"
         when: "a publication is created"
@@ -54,7 +43,7 @@ class PublicationSpec extends Specification implements DomainUnitTest<Publicatio
         def newPublicationIsValid = newPublication.validate()
         and: "a request is sent by a Guest"
         def guest = new Guest(user: user)
-        def request = new Request(newPublication, "place1", "place2", "2024-01-01", "2024-01-03", guest)
+        def request = new Request(publication: newPublication, deliveryPlace: "place1", returnPlace: "place2", startDate: "2024-01-01", endDate: "2024-01-03", guest: guest)
         and: "the request is accepted"
         newPublication.acceptRequest(request)
         then: "the request status is accepted"
@@ -69,14 +58,18 @@ class PublicationSpec extends Specification implements DomainUnitTest<Publicatio
         def newPublicationIsValid = newPublication.validate()
         and: "a request is sent by a Guest"
         def guest = new Guest(user: user)
-        def request = new Request(newPublication, "place1", "place2", "2024-01-01", "2024-01-03", guest)
+
+        def date0 = LocalDate.parse("2024-01-01")
+        def date1 = LocalDate.parse("2024-01-03")
+        def date2 = LocalDate.parse("2024-01-04")
+
+        def request = new Request(publication: newPublication, deliveryPlace: "place1", returnPlace: "place2", startDate: date0, endDate: date1, guest: guest)
+        newPublication.requests<<request
         and: "the request is accepted"
         newPublication.acceptRequest(request)
         and: "i try to validate dates that collide with that accepted request"
-        def date1 = request.stringToDate("2024-01-02")
-        def date2 = request.stringToDate("2024-01-04")
         then: "the dates are not valid"
-        newPublication.areDatesValid(date1,date2) == false
+        newPublication.areDatesAvailable(date0,date2) == false
     }
 
     void "date validation returns true if dates dont collide with accepted request"() {
@@ -86,14 +79,14 @@ class PublicationSpec extends Specification implements DomainUnitTest<Publicatio
         def newPublicationIsValid = newPublication.validate()
         and: "a request is sent by a Guest"
         def guest = new Guest(user: user)
-        def request = new Request(newPublication, "place1", "place2", "2024-01-01", "2024-01-03", guest)
+        def request = new Request(publication: newPublication, deliveryPlace: "place1", returnPlace: "place2", startDate: "2024-01-01", endDate: "2024-01-03", guest: guest)
         and: "the request is accepted"
         newPublication.acceptRequest(request)
         and: "i try to validate dates that collide with that accepted request"
-        def date1 = request.stringToDate("2024-01-05")
-        def date2 = request.stringToDate("2024-01-06")
+        def date1 = LocalDate.parse("2024-01-05")
+        def date2 = LocalDate.parse("2024-01-06")
         then: "the dates are not valid"
-        newPublication.areDatesValid(date1,date2) == true
+        newPublication.areDatesAvailable(date1,date2) == true
     }
 
 }
