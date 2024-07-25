@@ -10,13 +10,6 @@ class Guest {
     static constraints = {
     }
 
-    Publication createFirstPublication(Car car) {
-
-        def newHost = new Host(user: this.user)
-
-        newHost.createPublication(car)
-    }
-
     void addRequest(Publication publication, String deliveryPlace, String returnPlace, LocalDate startDate, LocalDate endDate) {
         if (publication.areDatesAvailable(startDate, endDate)) {
             def newRequest = new Request(deliveryPlace: deliveryPlace, returnPlace: returnPlace, startDate: startDate, endDate: endDate, guest: this)

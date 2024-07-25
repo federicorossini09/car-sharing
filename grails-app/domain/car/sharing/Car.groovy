@@ -1,5 +1,7 @@
 package car.sharing
-import java.time.Instant
+
+
+import java.time.LocalDate
 
 class Car {
     // todo llevar kms maximos a constante (en una clase)
@@ -10,20 +12,17 @@ class Car {
     String brand
     String model
     String variant
-    Instant vtvExpirationDate
+    LocalDate vtvExpirationDate
     Integer kilometers
-
 
     static constraints = {
         licensePlate blank: false
-        brand  blank: false
+        brand blank: false
         model blank: false
         variant blank: false
-        vtvExpirationDate blank: false, validator: {val -> return Instant.now() < val}
-        kilometers blank: false, validator: {kms -> return kms < 200000}
-        year blank: false, validator: { y -> return y >= 1980 }
+        vtvExpirationDate nullable: false, validator: { val -> return LocalDate.now() < val }
+        kilometers blank: false, validator: { kms -> return kms < 200000 }
+        year blank: false, validator: { if (it < 1980) 'tooOld' }
     }
-
-
 
 }

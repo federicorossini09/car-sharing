@@ -3,18 +3,26 @@ package car.sharing
 import grails.testing.gorm.DomainUnitTest
 import spock.lang.Shared
 import spock.lang.Specification
-import java.time.Instant
+
+import java.time.LocalDate
 import java.time.Period
 
 class CarSpec extends Specification implements DomainUnitTest<Car> {
 
-    @Shared Integer year
-    @Shared String brand
-    @Shared String model
-    @Shared String variant
-    @Shared Instant vtvExpirationDate
-    @Shared String licensePlate
-    @Shared Integer kilometers
+    @Shared
+    Integer year
+    @Shared
+    String brand
+    @Shared
+    String model
+    @Shared
+    String variant
+    @Shared
+    LocalDate vtvExpirationDate
+    @Shared
+    String licensePlate
+    @Shared
+    Integer kilometers
 
     def setup() {
         year = 2018
@@ -22,7 +30,7 @@ class CarSpec extends Specification implements DomainUnitTest<Car> {
         brand = "Ford"
         model = "Focus"
         variant = "1.6 Titanium"
-        vtvExpirationDate = Instant.now() + Period.ofDays(5)
+        vtvExpirationDate = LocalDate.now() + Period.ofDays(5)
         licensePlate = "AC933WP"
     }
 
@@ -98,7 +106,7 @@ class CarSpec extends Specification implements DomainUnitTest<Car> {
 
     void "car cannot be crated with expired vtvExpirationDate"() {
         when: "create a car without license plate"
-        def dateFiveDaysAgo = Instant.now() - Period.ofDays(5)
+        def dateFiveDaysAgo = LocalDate.now() - Period.ofDays(5)
         def car = new Car(year: year, brand: brand, model: model, variant: variant, vtvExpirationDate: dateFiveDaysAgo, licensePlate: licensePlate, kilometers: kilometers)
         def validCar = car.validate()
         then: "Car is not valid"
@@ -116,10 +124,10 @@ class CarSpec extends Specification implements DomainUnitTest<Car> {
 
     void "car creation success"() {
         when: "a car is created with valid data"
-            def car = new Car(brand: brand, year: year, model: model, variant: variant, vtvExpirationDate: vtvExpirationDate, licensePlate: licensePlate, kilometers: kilometers)
-            def carIsValid = car.validate()
+        def car = new Car(brand: brand, year: year, model: model, variant: variant, vtvExpirationDate: vtvExpirationDate, licensePlate: licensePlate, kilometers: kilometers)
+        def carIsValid = car.validate()
         then: "a valid car is created successfully"
-            carIsValid
+        carIsValid
     }
 
 }

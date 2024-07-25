@@ -22,6 +22,7 @@ class RegistrationController {
         } else {
             try {
                 def user = User.findByUsername(params.username)?: new User(username: params.username, password: params.password).save()
+                new Guest(user: user).save()
                 redirect controller: "login", action: "auth"
             } catch (ValidationException e) {
                 flash.message = "Register Failed"
