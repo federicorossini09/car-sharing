@@ -13,8 +13,6 @@ class Request {
     RequestStatus status = RequestStatus.WAITING
 
 
-
-
     def accept() {
         this.status = RequestStatus.ACCEPTED
         this.rent = new Rent()
@@ -36,5 +34,13 @@ class Request {
     boolean isOccupying(LocalDate startDate, LocalDate endDate) {
         return this.rent && this.rent.isScheduledOrActive()
                 && (this.dateCollision(startDate) | this.dateCollision(endDate))
+    }
+
+    void reportUndelivered() {
+        rent.cancel()
+    }
+
+    def reportSuccessfulDeliver() {
+        rent.activate()
     }
 }

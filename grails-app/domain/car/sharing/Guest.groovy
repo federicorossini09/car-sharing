@@ -7,6 +7,7 @@ class Guest {
     User user
     List requests = []
     static hasMany = [requests: Request]
+    Score score = new Score(value: 100)
     static constraints = {
     }
 
@@ -16,6 +17,16 @@ class Guest {
             publication.addRequest(newRequest)
             requests<<newRequest
         }
+    }
+
+    void reportUndelivered(Request request, Publication publication) {
+        request.reportUndelivered()
+        publication.penalize()
+    }
+
+    void reportSuccessfulDeliver(Request request) {
+        request.reportSuccessfulDeliver()
+
     }
 
     boolean cancelRent(Rent rent) {

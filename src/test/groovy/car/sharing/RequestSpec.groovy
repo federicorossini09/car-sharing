@@ -47,5 +47,26 @@ class RequestSpec extends Specification implements DomainUnitTest<Request> {
         newRequest.status == RequestStatus.ACCEPTED
     }
 
+    void "report successful deliver"() {
+        given: "an existing accepted request"
+        def newRequest = new Request(publication: publication, deliveryPlace: "place1", returnPlace: "place2", startDate: "2024-01-01", endDate: "2024-01-03", guest: guest)
+        newRequest.accept()
+        when: "the  deliver is reported"
+        newRequest.reportSuccessfulDeliver()
+        then: "rent is activated"
+        newRequest.rent.status == RentStatus.ACTIVE
+    }
+
+
+    void "report undeliver"() {
+        given: "an existing accepted request"
+        def newRequest = new Request(publication: publication, deliveryPlace: "place1", returnPlace: "place2", startDate: "2024-01-01", endDate: "2024-01-03", guest: guest)
+        newRequest.accept()
+        when: "the undeliver is reported"
+        newRequest.reportUndelivered()
+        then: "rent is canceled"
+        newRequest.rent.isCanceled()
+    }
+
 
 }

@@ -10,6 +10,7 @@ class Publication {
     PublicationStatus status = PublicationStatus.PENDING
     List<Request> requests = []
     static hasMany = [requests: Request]
+    Score score = new Score()
 
 
     static embedded = ['car', 'price']
@@ -45,6 +46,8 @@ class Publication {
     }
 
 
+
+
     List getRents() {
         this.requests.findAll { it.rent }.collect { it.rent }
     }
@@ -53,4 +56,7 @@ class Publication {
         requests.every { request -> !request.isOccupying(startDate, endDate) }
     }
 
+    def penalize() {
+        score.penalize()
+    }
 }

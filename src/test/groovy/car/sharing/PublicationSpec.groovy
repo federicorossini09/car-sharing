@@ -122,4 +122,12 @@ class PublicationSpec extends Specification implements DomainUnitTest<Publicatio
         newPublication.areDatesAvailable(date1, date2)
     }
 
+    void "i penalize a publication and it decreases its score"() {
+        given: "an existing publication"
+        def newPublication = new Publication(host: host, car: car)
+        when: "i penalize it"
+        newPublication.penalize()
+        then: "its score decreases 10%"
+        newPublication.score.value == 90
+    }
 }

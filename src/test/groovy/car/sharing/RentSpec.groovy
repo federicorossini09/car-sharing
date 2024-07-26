@@ -30,4 +30,13 @@ class RentSpec extends Specification implements DomainUnitTest<Rent> {
         then: "its not neither scheduled nor active"
         rent.isScheduledOrActive() == false
     }
+
+    void "activate a rent "() {
+        given: "an existing rent"
+        def rent = new Rent()
+        when: "activate"
+        rent.activate()
+        then: "its active"
+        rent.isScheduledOrActive()
+    }
 }
