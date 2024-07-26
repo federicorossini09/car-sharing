@@ -43,4 +43,18 @@ class Request {
     def reportSuccessfulDeliver() {
         rent.activate()
     }
+
+    def reportNotReturned() {
+        //todo probablemente cancel no sea lo correcto, debatir con fede si hacer estado especial o no-
+        rent.cancel()
+    }
+
+    def reportSuccessfulReturn() {
+        rent.finish()
+    }
+
+    def isFinished() {
+        this.rent.isFinished()
+    }
+
 }

@@ -10,4 +10,8 @@ class Score {
     def penalize() {
         value *= 0.9
     }
+
+    def getValue() {
+        return value
+    }
 }

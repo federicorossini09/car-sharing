@@ -11,6 +11,7 @@ class Publication {
     List<Request> requests = []
     static hasMany = [requests: Request]
     Score score = new Score()
+    List<Review> reviews = []
 
 
     static embedded = ['car', 'price']
@@ -58,5 +59,16 @@ class Publication {
 
     def penalize() {
         score.penalize()
+    }
+
+    def sendReview(Review review) {
+        this.reviews<<review
+    }
+
+    def calculateScore() {
+        //obtenemos un promedio
+        //todo hablar con fede como podemos hacer el tema de la penalizacion con esta manera
+        def total = reviews.sum { it.score.getValue() }
+        return total / reviews.size()
     }
 }

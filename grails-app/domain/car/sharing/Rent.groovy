@@ -16,6 +16,12 @@ class Rent {
         this.status = RentStatus.ACTIVE
     }
 
+    boolean finish() {
+        //todo falta chequeo que tenia que estar activa antes!!
+        //en ese caso convendria hacer un throw?
+        this.status = RentStatus.FINISHED
+    }
+
     boolean isScheduledOrActive() {
         return (this.status == RentStatus.SCHEDULED | this.status == RentStatus.ACTIVE)
     }
@@ -27,5 +33,9 @@ class Rent {
 
     boolean isActive() {
         return this.status == RentStatus.ACTIVE
+    }
+
+    def isFinished() {
+        return this.status == RentStatus.FINISHED
     }
 }

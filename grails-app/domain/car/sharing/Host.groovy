@@ -34,4 +34,19 @@ class Host {
         this.checkOwnsPublication(publication)
         publication.publish()
     }
+
+    void reportNotReturned(Request request, Publication publication) {
+        request.reportNotReturned()
+        //todo publication.penalize()
+    }
+
+    void reportSuccessfulReturn(Request request) {
+        request.reportSuccessfulReturn()
+    }
+
+    void doReview(Request request, Publication publication, Review review) {
+        if (request.isFinished()) {
+            publication.sendReview(review);
+        }
+    }
 }
