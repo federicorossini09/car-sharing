@@ -39,15 +39,12 @@ class Publication {
     }
 
     void addRequest(Request new_request) {
-        this.requests.add(new_request)
+        this.requests<<new_request
     }
 
     int lengthOfRequests() {
         return requests.size()
     }
-
-
-
 
     List getRents() {
         this.requests.findAll { it.rent }.collect { it.rent }

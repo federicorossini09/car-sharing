@@ -26,6 +26,8 @@ class HostSpec extends Specification implements DomainUnitTest<Host> {
     Publication publication1
     @Shared
     Publication publication2
+    @Shared
+    Request request1
 
     def setup() {
         user1 = new User(username: "username1", password: "password")
@@ -92,6 +94,19 @@ class HostSpec extends Specification implements DomainUnitTest<Host> {
         given: "an existing host that has a publication"
         host.addToPublications(publication1)
         when: "the publication is published"
+        host.publish(publication1)
+        then: "the publication is published successfully"
+        publication1.status == PublicationStatus.ACTIVE
+    }
+
+    void "host reports not returned car"() {
+        given: "an existing host that has an accepted publication"
+        host.addToPublications(publication1)
+        request1 = new Request(deliveryPlace: "place1", returnPlace: "place2", startDate: "2024-01-01", endDate: "2024-01-03", guest: guest)
+        publication1.addRequest(request1)
+        request1.accept()
+        and: ""
+        when: "the host reports that the car was not returnd"
         host.publish(publication1)
         then: "the publication is published successfully"
         publication1.status == PublicationStatus.ACTIVE
