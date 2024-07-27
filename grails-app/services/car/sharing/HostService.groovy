@@ -10,7 +10,7 @@ class HostService {
 
     PublicationService publicationService
 
-    def sessionFactory
+    RequestService requestService
 
     Host createHost() {
         User user = userService.getLoggedUser()
@@ -62,6 +62,36 @@ class HostService {
         def host = getLoggedHost()
         def publication = publicationService.getById(publicationId)
         host.publish(publication)
+    }
+
+    def acceptPublicationRequest(publicationId, requestId) {
+        def host = getLoggedHost()
+        def publication = publicationService.getById(publicationId)
+        def request = requestService.getById(requestId)
+
+        host.acceptPublicationRequest(publication, request)
+
+        request.save()
+        publication.save()
+    }
+
+    def getMyPublicationRequests(publicationId) {
+        def host = getLoggedHost()
+        if (!host)
+            throw new HostNotFoundException()
+        def publication = publicationService.getById(publicationId)
+        host.checkHostsPublication(publication)
+        publication.requests
+    }
+
+    def isLoggedHostPublication(Long publicationId) {
+        def host = getLoggedHost()
+        if (!host) {
+            false
+        } else {
+            def publication = publicationService.getById(publicationId)
+            host.hostsPublication(publication)
+        }
     }
 
 }

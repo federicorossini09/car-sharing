@@ -9,12 +9,18 @@ import java.time.Period
 
 class RequestSpec extends Specification implements DomainUnitTest<Request> {
 
-    @Shared User user1
-    @Shared Guest guest
-    @Shared User user2
-    @Shared Car car
-    @Shared Host host
-    @Shared Publication publication
+    @Shared
+    User user1
+    @Shared
+    Guest guest
+    @Shared
+    User user2
+    @Shared
+    Car car
+    @Shared
+    Host host
+    @Shared
+    Publication publication
 
     def setup() {
         user1 = new User(username: "username1", password: "password")
@@ -31,7 +37,7 @@ class RequestSpec extends Specification implements DomainUnitTest<Request> {
     void "create request success"() {
         given: "an existing guest"
         when: "a request is created"
-        def newRequest = new Request(publication: publication, deliveryPlace: "place1", returnPlace: "place2", startDate: "2024-01-01", endDate: "2024-01-03", guest: guest)
+        def newRequest = new Request(publication: publication, deliveryPlace: "place1", returnPlace: "place2", startDateTime: "2024-01-01", endDateTime: "2024-01-03", guest: guest)
         def requestIsValid = newRequest.validate()
         then: "the request is created successfully "
         requestIsValid && (newRequest.guest.user.username == user2.username)
@@ -40,7 +46,7 @@ class RequestSpec extends Specification implements DomainUnitTest<Request> {
 
     void "request accept"() {
         given: "an existing request"
-        def newRequest = new Request(publication: publication, deliveryPlace: "place1", returnPlace: "place2", startDate: "2024-01-01", endDate: "2024-01-03", guest: guest)
+        def newRequest = new Request(publication: publication, deliveryPlace: "place1", returnPlace: "place2", startDateTime: "2024-01-01", endDateTime: "2024-01-03", guest: guest)
         when: "the request is accepted"
         newRequest.accept()
         then: "the status changes "

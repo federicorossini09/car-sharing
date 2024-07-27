@@ -20,19 +20,32 @@ class Host {
         newPublication
     }
 
-    def checkOwnsPublication(Publication publication) {
-        if (publication.host.user.username != this.user.username)
+    def hostsPublication(Publication publication) {
+        publications.any { it.isSameAs(publication) }
+    }
+
+    def checkHostsPublication(Publication publication) {
+        if (!hostsPublication(publication))
             throw new HostDoesNotOwnPublicationException()
     }
 
     def updatePublicationPrice(Publication publication, BigDecimal newFinalValue) {
-        this.checkOwnsPublication(publication)
+        this.checkHostsPublication(publication)
         publication.updatePrice(newFinalValue)
     }
 
     def publish(Publication publication) {
-        this.checkOwnsPublication(publication)
+        this.checkHostsPublication(publication)
         publication.publish()
+    }
+
+    def acceptPublicationRequest(Publication publication, Request request) {
+        this.checkHostsPublication(publication)
+        publication.acceptRequest(request)
+    }
+
+    def hasUser(User user) {
+        this.user.isSameAs(user)
     }
 
     void reportNotReturned(Request request, Publication publication) {

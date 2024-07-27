@@ -10,3 +10,12 @@
 *= require bootstrap
 *= require_self
 */
+
+.car-sharing-card {
+  width: 18rem
+}
+
+.car-sharing-card:hover {
+  border: 1px solid #005cbf;
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+}

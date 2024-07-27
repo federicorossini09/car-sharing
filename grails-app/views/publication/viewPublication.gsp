@@ -7,6 +7,7 @@
 
 <g:set var="car" value="${publication.car}"/>
 <g:set var="price" value="${publication.price}"/>
+<g:set var="isHost" value="${publication.host.user.username == user.username}"/>
 
 <body>
 
@@ -15,6 +16,8 @@
         <div class="col-sm-8 mx-auto">
             <div class="card">
                 <div class="card-body">
+                    <span class="text-muted">#${publication.id}</span>
+
                     <h2 class="card-title">${car.brand} ${car.model} ${car.variant}</h2>
                     <h4 class="card-subtitle text-muted">${car.year} - ${car.kilometers}km</h4>
                 </div>
@@ -38,17 +41,34 @@
                         </div>
                     </div>
                 </div>
-                <g:if test="${isHost}">
-                    <div class="card-footer">
+
+                <div class="card-footer">
+                    <g:if test="${isHost}">
                         <g:if test="${publication.status == PublicationStatus.PENDING}">
-                            <g:form name="publish" action="publish"
-                                    id="${publication.id}">
+                            <g:form name="publish" action="publish" id="${publication.id}">
                                 <g:submitButton class="btn btn-info float-right" name="Submit"
                                                 value="Publicar"/>
                             </g:form>
                         </g:if>
-                    </div>
-                </g:if>
+                        <g:else>
+                            <g:form name="unpublish" action="unpublish" id="${publication.id}">
+                                <g:submitButton class="btn btn-warning float-right" name="Submit"
+                                                value="Despublicar"/>
+                            </g:form>
+                        </g:else>
+                        <g:link name="viewRequests" controller="request"
+                                action="viewPublicationRequests"
+                                params="[publicationId: publication.id]">
+                            <button class="btn btn-info float-left">Ver Solicitudes</button>
+                        </g:link>
+                    </g:if>
+                    <g:else>
+                        <g:link name="publish" controller="request" action="newRequest"
+                                params="[publicationId: publication.id, *: params]">
+                            <button class="btn btn-info float-right">Solicitar</button>
+                        </g:link>
+                    </g:else>
+                </div>
             </div>
         </div>
     </div>

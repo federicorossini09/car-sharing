@@ -13,8 +13,9 @@ class PublicationController {
 
     PublicationService publicationService
 
-    def myPublications() {
+    UserService userService
 
+    def myPublications() {
         try {
             [myPublications: hostService.getLoggedUserPublications()]
         } catch (HostNotFoundException e) {
@@ -50,7 +51,7 @@ class PublicationController {
     def setPublicationPrice(params) {
         try {
             hostService.setPublicationPrice(Long.valueOf(params.id), new BigDecimal(params.finalValue))
-            redirect(action: 'viewPublication', params: [publicationId: params.id, isHost: true])
+            redirect(action: 'viewPublication', params: [id: params.id])
         } catch (ValidationException e) {
             flash.errors = e.errors
             flash.values = params
@@ -59,7 +60,7 @@ class PublicationController {
     }
 
     def viewPublication(params) {
-        [publication: publicationService.getById(params.publicationId), isHost: params.isHost]
+        [publication: publicationService.getById(Long.valueOf(params.id)), user: userService.getLoggedUser()]
     }
 
     def publish(params) {

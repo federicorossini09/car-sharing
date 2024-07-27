@@ -77,7 +77,7 @@ class PublicationSpec extends Specification implements DomainUnitTest<Publicatio
         def newPublicationIsValid = newPublication.validate()
         and: "a request is sent by a Guest"
         def guest = new Guest(user: user)
-        def request = new Request(publication: newPublication, deliveryPlace: "place1", returnPlace: "place2", startDate: "2024-01-01", endDate: "2024-01-03", guest: guest)
+        def request = new Request(publication: newPublication, deliveryPlace: "place1", returnPlace: "place2", startDateTime: "2024-01-01", endDateTime: "2024-01-03", guest: guest)
         and: "the request is accepted"
         newPublication.acceptRequest(request)
         then: "the request status is accepted"
@@ -97,7 +97,7 @@ class PublicationSpec extends Specification implements DomainUnitTest<Publicatio
         def date1 = LocalDate.parse("2024-01-03")
         def date2 = LocalDate.parse("2024-01-04")
 
-        def request = new Request(publication: newPublication, deliveryPlace: "place1", returnPlace: "place2", startDate: date0, endDate: date1, guest: guest)
+        def request = new Request(publication: newPublication, deliveryPlace: "place1", returnPlace: "place2", startDateTime: date0, endDateTime: date1, guest: guest)
         newPublication.requests << request
         and: "the request is accepted"
         newPublication.acceptRequest(request)
@@ -112,10 +112,7 @@ class PublicationSpec extends Specification implements DomainUnitTest<Publicatio
         def newPublication = new Publication(host: host, car: car)
         and: "a request is sent by a Guest"
         def guest = new Guest(user: user)
-        // todo arreglar esto
-        //def date0 = LocalDate.parse("2024-01-01")
-        //def date1 = LocalDate.parse("2024-01-03")
-        def request = new Request(publication: newPublication, deliveryPlace: "place1", returnPlace: "place2", startDate: "2024-01-01", endDate: "2024-01-03", guest: guest)
+        def request = new Request(publication: newPublication, deliveryPlace: "place1", returnPlace: "place2", startDateTime: "2024-01-01", endDateTime: "2024-01-03", guest: guest)
         and: "the request is accepted"
         newPublication.acceptRequest(request)
         and: "i try to validate dates that collide with that accepted request"

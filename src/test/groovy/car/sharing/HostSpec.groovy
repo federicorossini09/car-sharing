@@ -70,7 +70,7 @@ class HostSpec extends Specification implements DomainUnitTest<Host> {
         given: "an existing host that has a publication"
         host.addToPublications(publication1)
         when: "checking if he owns that publication"
-        host.checkOwnsPublication(publication1)
+        host.checkHostsPublication(publication1)
         then: "an exception is not thrown"
         noExceptionThrown()
     }
@@ -80,7 +80,7 @@ class HostSpec extends Specification implements DomainUnitTest<Host> {
         host.addToPublications(publication1)
         host2.addToPublications(publication2)
         when: "checking if he owns another publication"
-        host.checkOwnsPublication(publication2)
+        host.checkHostsPublication(publication2)
         then: "a host does not own publication exception is thrown"
         thrown HostDoesNotOwnPublicationException
     }
