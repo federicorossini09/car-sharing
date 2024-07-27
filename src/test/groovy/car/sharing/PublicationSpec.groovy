@@ -128,10 +128,15 @@ class PublicationSpec extends Specification implements DomainUnitTest<Publicatio
     void "i penalize a publication and it decreases its score"() {
         given: "an existing publication"
         def newPublication = new Publication(host: host, car: car)
-        when: "i penalize it"
-        newPublication.penalize()
+        when: "it has two review"
+        def review1 = new Review(text: "muy bueno", score: 5)
+        def review2 = new Review(text: "muy malo", score: 1)
+        newPublication.sendReview(review1)
+        newPublication.sendReview(review2)
+        and: "i penalize it"
+        newPublication.penalize(PenaltyReason.NotDeliverOnTime)
         then: "its score decreases 10%"
-        newPublication.score.value == 90
+        newPublication.score.value == 2.7
     }
 
 

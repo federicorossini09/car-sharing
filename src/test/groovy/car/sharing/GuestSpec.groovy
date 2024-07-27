@@ -56,8 +56,12 @@ class GuestSpec extends Specification implements DomainUnitTest<Guest> {
 
     void "guest reports rent undelivered"() {
         given: "an existing car"
-        when: "a publication is created"
+        when: "an existing publication with two reviews"
         def newPublication = new Publication(host: host, car: car)
+        def review1 = new Review(text: "muy bueno", score: 5)
+        def review2 = new Review(text: "muy malo", score: 1)
+        newPublication.sendReview(review1)
+        newPublication.sendReview(review2)
         and: "a request is sent by a Guest "
         def guest = new Guest(user: user1)
         def startDate = LocalDate.parse("2024-01-01")
@@ -71,7 +75,7 @@ class GuestSpec extends Specification implements DomainUnitTest<Guest> {
         then: "the rent is canceled"
         request.rent.isCanceled()
         and: "the score of the publication has decreased 10%"
-        newPublication.score.value == 90
+        newPublication.score.value == 2.7
     }
 
     void "guest reporsts rent delivered"() {

@@ -53,8 +53,8 @@ class Publication {
         requests.every { request -> !request.isOccupying(startDate, endDate) }
     }
 
-    def penalize() {
-        score.penalize()
+    def penalize(PenaltyReason reason) {
+        score.penalize(reason)
     }
 
     def sendReview(Review review) {

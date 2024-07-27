@@ -2,25 +2,36 @@ package car.sharing
 
 class Score {
 
-    Integer value = 100
+    //todo ver que hacer con el value
+    BigDecimal value = 3
     List<Review> reviews = []
+    List<Penalty> penalties = []
+
 
     static constraints = {
     }
 
-    def penalize() {
-        value *= 0.9
+    def penalize(PenaltyReason reason) {
+        def penalty = new Penalty(reason)
+        penalties<<penalty
+        this.calculate()
     }
 
     def getValue() {
         return value
     }
 
+    def isReady() {
+        this.reviews.size() > 1
+    }
     def calculate() {
-        //obtenemos un promedio
-        //todo hablar con fede como podemos hacer el tema de la penalizacion con esta manera
-        def total = reviews.sum { it.score }
-        return total / reviews.size()
+        if (this.isReady()) {
+            def total = reviews.sum { it.score } / reviews.size()
+            penalties.each { penalty ->
+                total = penalty.apply(total)
+            }
+            value = total
+        }
     }
 
     def sendReview(Review review) {

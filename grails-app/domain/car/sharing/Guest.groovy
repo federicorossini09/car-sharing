@@ -21,8 +21,7 @@ class Guest {
 
     void reportUndelivered(Request request, Publication publication) {
         request.reportUndelivered()
-        //todo mover lo siguiente al metodo .reportUndelivered()
-        publication.penalize()
+        publication.penalize(PenaltyReason.NotDeliverOnTime)
     }
 
     void reportSuccessfulDeliver(Request request) {
