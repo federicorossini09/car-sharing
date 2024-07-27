@@ -2,7 +2,7 @@ package car.sharing
 
 class Review {
     String text
-    Score score
+    Integer score
 
     static constraints = {
     }
