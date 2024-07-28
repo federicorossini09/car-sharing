@@ -39,7 +39,9 @@ class HostSpec extends Specification implements DomainUnitTest<Host> {
         car = new Car(year: 2018, brand: 'Ford', model: 'Focus', variant: '1.6 Titanium', vtvExpirationDate: LocalDate.now() + Period.ofDays(5), kilometers: 50000, licensePlate: "AC933WP")
         price = new Price(car.year, car.kilometers)
         publication1 = new Publication(car: car, price: price)
+        publication1.id = 1
         publication2 = new Publication(car: car, price: price)
+        publication1.id = 2
         def guest2 = new Guest(user: user2)
 
     }
@@ -70,7 +72,7 @@ class HostSpec extends Specification implements DomainUnitTest<Host> {
         given: "an existing host that has a publication"
         host.addToPublications(publication1)
         when: "checking if he owns that publication"
-        host.checkOwnsPublication(publication1)
+        host.checkHostsPublication(publication1)
         then: "an exception is not thrown"
         noExceptionThrown()
     }
@@ -80,7 +82,7 @@ class HostSpec extends Specification implements DomainUnitTest<Host> {
         host.addToPublications(publication1)
         host2.addToPublications(publication2)
         when: "checking if he owns another publication"
-        host.checkOwnsPublication(publication2)
+        host.checkHostsPublication(publication2)
         then: "a host does not own publication exception is thrown"
         thrown HostDoesNotOwnPublicationException
     }

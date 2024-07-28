@@ -13,8 +13,9 @@ class PublicationController {
 
     PublicationService publicationService
 
-    def myPublications() {
+    UserService userService
 
+    def myPublications() {
         try {
             [myPublications: hostService.getLoggedUserPublications()]
         } catch (HostNotFoundException e) {
@@ -50,7 +51,7 @@ class PublicationController {
     def setPublicationPrice(params) {
         try {
             hostService.setPublicationPrice(Long.valueOf(params.id), new BigDecimal(params.finalValue))
-            redirect(action: 'viewPublication', params: [publicationId: params.id, isHost: true])
+            redirect(action: 'viewPublication', params: [id: params.id])
         } catch (ValidationException e) {
             flash.errors = e.errors
             flash.values = params
@@ -59,11 +60,19 @@ class PublicationController {
     }
 
     def viewPublication(params) {
-        [publication: publicationService.getById(params.publicationId), isHost: params.isHost]
+        def publicationId = Long.valueOf(params.id)
+        [publication: publicationService.getById(publicationId), isHost: hostService.isLoggedHostPublication(publicationId)]
     }
 
     def publish(params) {
         hostService.publish(Long.valueOf(params.id))
-        redirect(action: 'myPublications')
+        flash.successMessage = 'La Publicación fue activada'
+        redirect(action: 'viewPublication', params: [id: params.id])
+    }
+
+    def unpublish(params) {
+        hostService.unpublish(Long.valueOf(params.id))
+        flash.successMessage = 'La Publicación fue desactivada'
+        redirect(action: 'viewPublication', params: [id: params.id])
     }
 }

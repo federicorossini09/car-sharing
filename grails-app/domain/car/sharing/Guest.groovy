@@ -1,21 +1,33 @@
 package car.sharing
 
-import java.time.LocalDate
+import car.sharing.exceptions.HostCannotRequestHisPublication
+
+import java.time.LocalDateTime
 
 class Guest {
 
     User user
-    List requests = []
     static hasMany = [requests: Request]
     Score score = new Score()
     static constraints = {
     }
 
-    void addRequest(Publication publication, String deliveryPlace, String returnPlace, LocalDate startDate, LocalDate endDate) {
+    def addRequest(Publication publication, String deliveryPlace, String returnPlace, LocalDateTime startDate, LocalDateTime endDate) {
+
+        checkUserCanRequestPublication(publication)
+
+        //TODO: tal vez esta validacion es mejor que esté dentro del método "publication.addRequest" asi siempre queda adentro de publication
         if (publication.areDatesAvailable(startDate, endDate)) {
-            def newRequest = new Request(deliveryPlace: deliveryPlace, returnPlace: returnPlace, startDate: startDate, endDate: endDate, guest: this)
+            def newRequest = new Request(deliveryPlace: deliveryPlace, returnPlace: returnPlace, startDateTime: startDate, endDateTime: endDate, guest: this)
             publication.addRequest(newRequest)
-            requests<<newRequest
+            this.addToRequests(newRequest)
+            newRequest
+        }
+    }
+
+    def checkUserCanRequestPublication(Publication publication) {
+        if (publication.isHostedBy(this.user)) {
+            throw new HostCannotRequestHisPublication()
         }
     }
 
@@ -33,5 +45,9 @@ class Guest {
 
     boolean cancelRent(Rent rent) {
         rent.cancel()
+    }
+
+    def ownsRequest(Request request) {
+        requests.any { it.isSameAs(request) }
     }
 }

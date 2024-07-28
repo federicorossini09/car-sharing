@@ -1,39 +1,42 @@
 package car.sharing
 
-import java.time.LocalDate
+
+import java.time.LocalDateTime
 
 class Request {
 
     String deliveryPlace
     String returnPlace
-    LocalDate startDate
-    LocalDate endDate
-    static belongsTo = [guest: Guest]
+    LocalDateTime startDateTime
+    LocalDateTime endDateTime
+    static belongsTo = [guest: Guest, publication: Publication]
     Rent rent
     RequestStatus status = RequestStatus.WAITING
 
-
     def accept() {
-        this.status = RequestStatus.ACCEPTED
+        this.setStatus(RequestStatus.ACCEPTED)
         this.rent = new Rent()
     }
 
-
-    def dateCollision(LocalDate date) {
-        return date >= this.startDate && date <= this.endDate
+    def dateCollision(LocalDateTime date) {
+        return date >= this.startDateTime && date <= this.endDateTime
     }
 
     static constraints = {
         deliveryPlace blank: false
         returnPlace blank: false
-        startDate blank: false
-        endDate blank: false
+        startDateTime blank: false, validator: { val, obj -> val < obj.endDateTime }
+        endDateTime blank: false, validator: { val, obj -> val > obj.startDateTime }
         rent nullable: true
     }
 
-    boolean isOccupying(LocalDate startDate, LocalDate endDate) {
+    boolean isOccupying(LocalDateTime startDate, LocalDateTime endDate) {
         return this.rent && this.rent.isScheduledOrActive()
                 && (this.dateCollision(startDate) | this.dateCollision(endDate))
+    }
+
+    def isSameAs(Request request) {
+        request.id == this.id
     }
 
     void reportUndelivered() {
