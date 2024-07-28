@@ -60,11 +60,19 @@ class PublicationController {
     }
 
     def viewPublication(params) {
-        [publication: publicationService.getById(Long.valueOf(params.id)), user: userService.getLoggedUser()]
+        def publicationId = Long.valueOf(params.id)
+        [publication: publicationService.getById(publicationId), isHost: hostService.isLoggedHostPublication(publicationId)]
     }
 
     def publish(params) {
         hostService.publish(Long.valueOf(params.id))
-        redirect(action: 'myPublications')
+        flash.successMessage = 'La Publicación fue activada'
+        redirect(action: 'viewPublication', params: [id: params.id])
+    }
+
+    def unpublish(params) {
+        hostService.unpublish(Long.valueOf(params.id))
+        flash.successMessage = 'La Publicación fue desactivada'
+        redirect(action: 'viewPublication', params: [id: params.id])
     }
 }

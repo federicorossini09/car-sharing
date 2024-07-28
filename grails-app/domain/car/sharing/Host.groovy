@@ -39,6 +39,11 @@ class Host {
         publication.publish()
     }
 
+    def unpublish(Publication publication) {
+        this.checkHostsPublication(publication)
+        publication.unpublish()
+    }
+
     def acceptPublicationRequest(Publication publication, Request request) {
         this.checkHostsPublication(publication)
         publication.acceptRequest(request)

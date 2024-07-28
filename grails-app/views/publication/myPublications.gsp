@@ -28,10 +28,12 @@
 </g:else>
 <g:if test="${!myPublications.empty}">
     <div class="row mt-3">
-        <div class="col-sm-3 mx-3">
-            <g:each in="${myPublications}" var="publication">
+        <g:each in="${myPublications}" var="publication">
+            <div class="col-sm-3 mx-3">
+
                 <div class="card car-sharing-card">
                     <div class="card-body">
+                        <span class="text-muted">#${publication.id}</span>
                         <g:if test="${publication.status == PublicationStatus.ACTIVE}">
                             <span class="badge badge-success">Activada</span>
                         </g:if>
@@ -47,8 +49,8 @@
                                 id="${publication.id}"/>
                     </div>
                 </div>
-            </g:each>
-        </div>
+            </div>
+        </g:each>
     </div>
 </g:if>
 </body>

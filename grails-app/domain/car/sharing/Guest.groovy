@@ -20,7 +20,7 @@ class Guest {
         if (publication.areDatesAvailable(startDate, endDate)) {
             def newRequest = new Request(deliveryPlace: deliveryPlace, returnPlace: returnPlace, startDateTime: startDate, endDateTime: endDate, guest: this)
             publication.addRequest(newRequest)
-            requests << newRequest
+            this.addToRequests(newRequest)
             newRequest
         }
     }

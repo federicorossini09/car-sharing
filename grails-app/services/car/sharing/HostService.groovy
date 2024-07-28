@@ -64,6 +64,13 @@ class HostService {
         host.publish(publication)
     }
 
+    def unpublish(Long publicationId) {
+        def host = getLoggedHost()
+        def publication = publicationService.getById(publicationId)
+        host.unpublish(publication)
+    }
+
+
     def acceptPublicationRequest(publicationId, requestId) {
         def host = getLoggedHost()
         def publication = publicationService.getById(publicationId)

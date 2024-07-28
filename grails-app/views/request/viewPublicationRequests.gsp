@@ -6,7 +6,9 @@
 </head>
 
 <body>
-<h3>Solicitudes para tu ${publication.car.brand} ${publication.car.model}</h3>
+<span class="text-muted">Publicación #${publication.id}</span>
+
+<h3>Solicitudes para tu ${publication.car.brand.toUpperCase()} ${publication.car.model.toUpperCase()}</h3>
 
 <div class="container container-fluid">
     <g:if test="${!requests.isEmpty()}">
@@ -54,7 +56,22 @@
         </div>
     </g:if>
     <g:else>
-        Tu publicación aún no tiene solicitudes.
+        <div class="row mt-5">
+            <div class="col d-flex justify-content-center">
+                <div class="alert alert-warning" role="alert">
+                    Aún no hay solicitudes
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col d-flex justify-content-center">
+                <g:link name="publish" controller="publication" action="viewPublication"
+                        params="[id: publication.id]">
+                    <button class="btn btn-info float-left">Ver Publicación</button>
+                </g:link>
+            </div>
+        </div>
     </g:else>
 </div>
 </body>

@@ -35,6 +35,8 @@ class Publication {
     def acceptRequest(Request requestToAccept) {
         if (areDatesAvailable(requestToAccept.startDateTime, requestToAccept.endDateTime)) {
             requestToAccept.accept()
+        } else {
+            th
         }
     }
 

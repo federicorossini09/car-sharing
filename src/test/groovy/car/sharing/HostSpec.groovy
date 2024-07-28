@@ -39,7 +39,9 @@ class HostSpec extends Specification implements DomainUnitTest<Host> {
         car = new Car(year: 2018, brand: 'Ford', model: 'Focus', variant: '1.6 Titanium', vtvExpirationDate: LocalDate.now() + Period.ofDays(5), kilometers: 50000, licensePlate: "AC933WP")
         price = new Price(car.year, car.kilometers)
         publication1 = new Publication(car: car, price: price)
+        publication1.id = 1
         publication2 = new Publication(car: car, price: price)
+        publication1.id = 2
         def guest2 = new Guest(user: user2)
 
     }

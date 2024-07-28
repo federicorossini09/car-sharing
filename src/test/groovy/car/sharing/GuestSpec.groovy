@@ -1,10 +1,12 @@
 package car.sharing
 
+import car.sharing.exceptions.HostCannotRequestHisPublication
 import grails.testing.gorm.DomainUnitTest
 import spock.lang.Shared
 import spock.lang.Specification
 
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.Period
 
 class GuestSpec extends Specification implements DomainUnitTest<Guest> {
@@ -45,12 +47,21 @@ class GuestSpec extends Specification implements DomainUnitTest<Guest> {
         when: "a publication is created"
         def newPublication = new Publication(host: host, car: car)
         and: "a request is sent by a Guest"
-        def guest = new Guest(user: user1)
-        def startDate = LocalDate.parse("2024-01-01")
-        def returnDate = LocalDate.parse("2024-01-03")
-        guest.addRequest(newPublication, "place1", "place2", startDate , returnDate)
+        def guest = new Guest(user: user2)
+        guest.addRequest(newPublication, "place1", "place2", LocalDateTime.parse("2024-01-01T00:00:00"), LocalDateTime.parse("2024-01-03T00:00:00"))
         then: "publication requests size is 1"
         newPublication.lengthOfRequests() == 1
+    }
+
+    void "host cannot request own publication"() {
+        given: "an existing car"
+        when: "a publication is created"
+        def newPublication = new Publication(host: host, car: car)
+        and: "a request is sent by a Guest"
+        def guest = new Guest(user: user1)
+        guest.addRequest(newPublication, "place1", "place2", LocalDateTime.parse("2024-01-01T00:00:00"), LocalDateTime.parse("2024-01-03T00:00:00"))
+        then: "publication requests size is 1"
+        thrown HostCannotRequestHisPublication
     }
 
 
@@ -63,12 +74,12 @@ class GuestSpec extends Specification implements DomainUnitTest<Guest> {
         newPublication.sendReview(review1)
         newPublication.sendReview(review2)
         and: "a request is sent by a Guest "
-        def guest = new Guest(user: user1)
-        def startDate = LocalDate.parse("2024-01-01")
-        def returnDate = LocalDate.parse("2024-01-03")
-        guest.addRequest(newPublication, "place1", "place2", startDate , returnDate)
+        def guest = new Guest(user: user2)
+        def startDate = LocalDateTime.parse("2024-01-01T00:00:00")
+        def returnDate = LocalDateTime.parse("2024-01-03T00:00:00")
+        guest.addRequest(newPublication, "place1", "place2", startDate, returnDate)
         and: "its accepted"
-        def request = (Request) guest.requests.get(0)
+        def request = guest.requests[0]
         request.accept()
         and: "the guest reports it as undelivered"
         guest.reportUndelivered(request, newPublication)
@@ -78,17 +89,17 @@ class GuestSpec extends Specification implements DomainUnitTest<Guest> {
         newPublication.score.value == 2.7
     }
 
-    void "guest reporsts rent delivered"() {
+    void "guest reports rent delivered"() {
         given: "an existing car"
         when: "a publication is created"
         def newPublication = new Publication(host: host, car: car)
         and: "a request is sent by a Guest "
-        def guest = new Guest(user: user1)
-        def startDate = LocalDate.parse("2024-01-01")
-        def returnDate = LocalDate.parse("2024-01-03")
-        guest.addRequest(newPublication, "place1", "place2", startDate , returnDate)
+        def guest = new Guest(user: user2)
+        def startDate = LocalDateTime.parse("2024-01-01T00:00:00")
+        def returnDate = LocalDateTime.parse("2024-01-03T00:00:00")
+        guest.addRequest(newPublication, "place1", "place2", startDate, returnDate)
         and: "its accepted"
-        def request = (Request) guest.requests.get(0)
+        def request = guest.requests[0]
         request.accept()
         and: "the guest reports it as undelivered"
         guest.reportSuccessfulDeliver(request, 55000)

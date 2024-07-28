@@ -1,10 +1,12 @@
 package car.sharing
 
+import car.sharing.exceptions.PublicationNotAvailableException
 import grails.testing.gorm.DomainUnitTest
 import spock.lang.Shared
 import spock.lang.Specification
 
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.Period
 
 class PublicationSpec extends Specification implements DomainUnitTest<Publication> {
@@ -93,17 +95,18 @@ class PublicationSpec extends Specification implements DomainUnitTest<Publicatio
         and: "a request is sent by a Guest"
         def guest = new Guest(user: user)
 
-        def date0 = LocalDate.parse("2024-01-01")
-        def date1 = LocalDate.parse("2024-01-03")
-        def date2 = LocalDate.parse("2024-01-04")
+        def date0 = LocalDateTime.parse("2024-01-01T00:00:00")
+        def date1 = LocalDateTime.parse("2024-01-03T00:00:00")
+        def date2 = LocalDateTime.parse("2024-01-04T00:00:00")
 
         def request = new Request(publication: newPublication, deliveryPlace: "place1", returnPlace: "place2", startDateTime: date0, endDateTime: date1, guest: guest)
-        newPublication.requests << request
+        newPublication.addToRequests(request)
         and: "the request is accepted"
         newPublication.acceptRequest(request)
         and: "i try to validate dates that collide with that accepted request"
+        newPublication.areDatesAvailable(date0, date2)
         then: "the dates are not valid"
-        !newPublication.areDatesAvailable(date0, date2)
+        thrown PublicationNotAvailableException
     }
 
     void "date validation returns true if dates dont collide with accepted request"() {
@@ -116,8 +119,8 @@ class PublicationSpec extends Specification implements DomainUnitTest<Publicatio
         and: "the request is accepted"
         newPublication.acceptRequest(request)
         and: "i try to validate dates that collide with that accepted request"
-        def date1 = LocalDate.parse("2024-01-05")
-        def date2 = LocalDate.parse("2024-01-06")
+        def date1 = LocalDateTime.parse("2024-01-05T00:00:00")
+        def date2 = LocalDateTime.parse("2024-01-06T00:00:00")
         then: "the dates are valid"
         newPublication.areDatesAvailable(date1, date2)
     }

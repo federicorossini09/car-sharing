@@ -57,7 +57,21 @@
         </div>
     </g:if>
     <g:else>
-        Todavía no solicitaste ningún auto
+        <div class="row mt-5">
+            <div class="col d-flex justify-content-center">
+                <div class="alert alert-warning" role="alert">
+                    Todavía no solicitaste ningún auto
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col d-flex justify-content-center">
+                <g:link name="home" controller="home" action="index">
+                    <button class="btn btn-info">Ver Autos Publicados</button>
+                </g:link>
+            </div>
+        </div>
     </g:else>
 </div>
 </body>
