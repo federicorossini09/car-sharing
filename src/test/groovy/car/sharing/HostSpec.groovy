@@ -26,6 +26,10 @@ class HostSpec extends Specification implements DomainUnitTest<Host> {
     Publication publication1
     @Shared
     Publication publication2
+    @Shared
+    Request request1
+    @Shared
+    Guest guest2
 
     def setup() {
         user1 = new User(username: "username1", password: "password")
@@ -36,6 +40,8 @@ class HostSpec extends Specification implements DomainUnitTest<Host> {
         price = new Price(car.year, car.kilometers)
         publication1 = new Publication(car: car, price: price)
         publication2 = new Publication(car: car, price: price)
+        def guest2 = new Guest(user: user2)
+
     }
 
     def cleanup() {
@@ -95,5 +101,20 @@ class HostSpec extends Specification implements DomainUnitTest<Host> {
         host.publish(publication1)
         then: "the publication is published successfully"
         publication1.status == PublicationStatus.ACTIVE
+    }
+
+    void "host reports not returned car"() {
+        given: "an existing host that has an accepted publication"
+        host.addToPublications(publication1)
+        request1 = new Request(deliveryPlace: "place1", returnPlace: "place2", startDate: "2024-01-01", endDate: "2024-01-03", guest: guest2)
+        publication1.addRequest(request1)
+        request1.accept()
+        and: "the  car was delivered by the host"
+        request1.reportSuccessfulDeliver()
+        when: "the host reports that the car was not returned by the guest"
+        request1.reportNotReturned()
+        then: "the publication is ____ (canceled?)"
+        //todo aca no deberia ser otro tipo?
+        request1.rent.isCanceled()
     }
 }

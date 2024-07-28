@@ -10,6 +10,7 @@ class Publication {
     PublicationStatus status = PublicationStatus.PENDING
     List<Request> requests = []
     static hasMany = [requests: Request]
+    Score score = new Score()
 
 
     static embedded = ['car', 'price']
@@ -37,13 +38,12 @@ class Publication {
     }
 
     void addRequest(Request new_request) {
-        this.requests.add(new_request)
+        this.requests<<new_request
     }
 
     int lengthOfRequests() {
         return requests.size()
     }
-
 
     List getRents() {
         this.requests.findAll { it.rent }.collect { it.rent }
@@ -53,4 +53,16 @@ class Publication {
         requests.every { request -> !request.isOccupying(startDate, endDate) }
     }
 
+    def penalize(PenaltyReason reason) {
+        score.penalize(reason)
+    }
+
+    def sendReview(Review review) {
+        score.sendReview(review)
+
+    }
+
+    def calculateScore() {
+        score.calculate()
+    }
 }

@@ -112,6 +112,9 @@ class PublicationSpec extends Specification implements DomainUnitTest<Publicatio
         def newPublication = new Publication(host: host, car: car)
         and: "a request is sent by a Guest"
         def guest = new Guest(user: user)
+        // todo arreglar esto
+        //def date0 = LocalDate.parse("2024-01-01")
+        //def date1 = LocalDate.parse("2024-01-03")
         def request = new Request(publication: newPublication, deliveryPlace: "place1", returnPlace: "place2", startDate: "2024-01-01", endDate: "2024-01-03", guest: guest)
         and: "the request is accepted"
         newPublication.acceptRequest(request)
@@ -122,4 +125,46 @@ class PublicationSpec extends Specification implements DomainUnitTest<Publicatio
         newPublication.areDatesAvailable(date1, date2)
     }
 
+    void "i penalize a publication and it decreases its score"() {
+        given: "an existing publication"
+        def newPublication = new Publication(host: host, car: car)
+        when: "it has two review"
+        def review1 = new Review(text: "muy bueno", score: 5)
+        def review2 = new Review(text: "muy malo", score: 1)
+        newPublication.sendReview(review1)
+        newPublication.sendReview(review2)
+        and: "i penalize it"
+        newPublication.penalize(PenaltyReason.NotDeliverOnTime)
+        then: "its score decreases 10%"
+        newPublication.score.value == 2.7
+    }
+
+
+    void "sending a review to a publication success"() {
+        given: "an existing publication and an accepted requeest"
+        def newPublication = new Publication(host: host, car: car)
+        def guest = new Guest(user: user)
+        def request = new Request(publication: newPublication, deliveryPlace: "place1", returnPlace: "place2", startDate: "2024-01-01", endDate: "2024-01-03", guest: guest)
+        request.accept()
+        when: "i send a review for that requst"
+        def review2 = new Review(text: "no me fue tan bien", score: 3)
+        newPublication.sendReview(review2)
+        then: "the review was added to the list"
+        newPublication.score.reviews.size()==1
+    }
+
+
+    void "if i have two reviews the score is the average"() {
+        given: "an existing publication"
+        def newPublication = new Publication(host: host, car: car)
+        when: "i it has two reviews"
+        def review1 = new Review(text: "muy bueno loco", score: 5)
+        def review2 = new Review(text: "no me fue tan bien", score: 1)
+        newPublication.sendReview(review1)
+        newPublication.sendReview(review2)
+        and: "i ask for the score of the publication"
+        def score = newPublication.calculateScore()
+        then: "its the average"
+        score == 3
+    }
 }

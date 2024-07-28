@@ -53,4 +53,47 @@ class GuestSpec extends Specification implements DomainUnitTest<Guest> {
         newPublication.lengthOfRequests() == 1
     }
 
+
+    void "guest reports rent undelivered"() {
+        given: "an existing car"
+        when: "an existing publication with two reviews"
+        def newPublication = new Publication(host: host, car: car)
+        def review1 = new Review(text: "muy bueno", score: 5)
+        def review2 = new Review(text: "muy malo", score: 1)
+        newPublication.sendReview(review1)
+        newPublication.sendReview(review2)
+        and: "a request is sent by a Guest "
+        def guest = new Guest(user: user1)
+        def startDate = LocalDate.parse("2024-01-01")
+        def returnDate = LocalDate.parse("2024-01-03")
+        guest.addRequest(newPublication, "place1", "place2", startDate , returnDate)
+        and: "its accepted"
+        def request = (Request) guest.requests.get(0)
+        request.accept()
+        and: "the guest reports it as undelivered"
+        guest.reportUndelivered(request, newPublication)
+        then: "the rent is canceled"
+        request.rent.isCanceled()
+        and: "the score of the publication has decreased 10%"
+        newPublication.score.value == 2.7
+    }
+
+    void "guest reporsts rent delivered"() {
+        given: "an existing car"
+        when: "a publication is created"
+        def newPublication = new Publication(host: host, car: car)
+        and: "a request is sent by a Guest "
+        def guest = new Guest(user: user1)
+        def startDate = LocalDate.parse("2024-01-01")
+        def returnDate = LocalDate.parse("2024-01-03")
+        guest.addRequest(newPublication, "place1", "place2", startDate , returnDate)
+        and: "its accepted"
+        def request = (Request) guest.requests.get(0)
+        request.accept()
+        and: "the guest reports it as undelivered"
+        guest.reportSuccessfulDeliver(request, 55000)
+        then: "the rent is active"
+        request.rent.isActive()
+    }
+
 }

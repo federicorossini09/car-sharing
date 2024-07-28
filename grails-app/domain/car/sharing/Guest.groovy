@@ -7,6 +7,7 @@ class Guest {
     User user
     List requests = []
     static hasMany = [requests: Request]
+    Score score = new Score()
     static constraints = {
     }
 
@@ -16,6 +17,18 @@ class Guest {
             publication.addRequest(newRequest)
             requests<<newRequest
         }
+    }
+
+    void reportUndelivered(Request request, Publication publication) {
+        request.reportUndelivered()
+        // todo solo puedo reportar si yo soy el guest
+        //todo esto de abajo deberia ir en el metodo de arriba
+        publication.penalize(PenaltyReason.NotDeliverOnTime)
+    }
+
+    void reportSuccessfulDeliver(Request request, Integer currentKilometers) {
+        request.reportSuccessfulDeliver(currentKilometers)
+
     }
 
     boolean cancelRent(Rent rent) {
