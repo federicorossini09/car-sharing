@@ -40,8 +40,8 @@ class Host {
         //todo publication.penalize()
     }
 
-    void reportSuccessfulReturn(Request request) {
-        request.reportSuccessfulReturn()
+    void reportSuccessfulReturn(Request request, Integer kilometers) {
+        request.reportSuccessfulReturn(kilometers)
     }
 
     void doReview(Request request, Publication publication, Review review) {

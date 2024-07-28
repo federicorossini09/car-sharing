@@ -37,20 +37,39 @@ class Request {
     }
 
     void reportUndelivered() {
+        /*
+        if (this.isNotScheduled()) {
+            //todo throw error porque tiene que estar programada
+        } else if (this.couldReportUndeliver()) {
+            //todo throw error porque tiene que esperar cierto tiempo
+        }
+        //todo chequear que este en estado cancelable
+
+         */
         rent.cancel()
+
+
     }
 
-    def reportSuccessfulDeliver() {
-        rent.activate()
+    def reportSuccessfulDeliver(Integer currentKilometers) {
+        rent.activate(currentKilometers)
     }
 
     def reportNotReturned() {
-        //todo probablemente cancel no sea lo correcto, debatir con fede si hacer estado especial o no-
+        /*if (this.isNotActive()) {
+            //todo throw error porque tiene que estar activa
+        } else if (this.couldReportNotReturned()) {
+            //todo throw error porque tiene que
+        } else if (!rent.isActive()) {
+            //todo validar qeu este activa
+        }*/
         rent.cancel()
     }
 
-    def reportSuccessfulReturn() {
-        rent.finish()
+    def reportSuccessfulReturn(Integer kilometers) {
+        //todo penalizar al guest si aca nos pasamos
+        rent.finish(kilometers)
+        //todo publication actualizar precio
     }
 
     def isFinished() {

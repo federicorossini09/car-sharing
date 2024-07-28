@@ -3,23 +3,27 @@ package car.sharing
 class Rent {
     RentStatus status = RentStatus.SCHEDULED
 
+    Integer kilometersDelivered
+    Integer kilometersReturned
+
+
     static constraints = {
+        kilometersDelivered nullable: true
+        kilometersReturned nullable: true
     }
 
     boolean cancel() {
-        this.status = RentStatus.CANCELED
+        this.setStatus(RentStatus.CANCELED)
     }
 
-    boolean activate() {
-        //todo falta chequeo que tenia que estar scheduled antes!!
-        //en ese caso convendria hacer un throw?
+    boolean activate(Integer currentKilometers) {
+        this.setKilometersDelivered(currentKilometers)
         this.status = RentStatus.ACTIVE
     }
 
-    boolean finish() {
-        //todo falta chequeo que tenia que estar activa antes!!
-        //en ese caso convendria hacer un throw?
-        this.status = RentStatus.FINISHED
+    boolean finish(Integer kilometers) {
+        this.setKilometersReturned(kilometers)
+        this.setStatus(RentStatus.FINISHED)
     }
 
     boolean isScheduledOrActive() {
