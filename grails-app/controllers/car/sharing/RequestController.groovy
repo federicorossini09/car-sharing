@@ -28,7 +28,7 @@ class RequestController {
             def requestParams = parseRequestParams(params)
             def request = guestService.requestPublication(Long.valueOf(requestParams.publicationId), requestParams)
             flash.successMessage = "Solicitud realizada con éxito!"
-            redirect(action: 'viewRequest', params: [requestId: request.id, publicationId: requestParams.publicationId])
+            redirect(action: 'viewRequest', params: [requestId: request.id])
         } catch (ValidationException e) {
             flash.errors = e.errors
             flash.values = params
@@ -42,11 +42,10 @@ class RequestController {
 
     def viewRequest(params) {
         def requestId = Long.valueOf(params.requestId)
-        def publicationId = Long.valueOf(params.publicationId)
-        [request          : requestService.getById(requestId),
-         publication      : publicationService.getById(publicationId),
+        def request = requestService.getById(requestId)
+        [request          : request,
          isGuestRequest   : guestService.isLoggedGuestRequest(requestId),
-         isHostPublication: hostService.isLoggedHostPublication(publicationId)
+         isHostPublication: hostService.isLoggedHostPublication(request.publication.id)
         ]
     }
 
@@ -60,14 +59,20 @@ class RequestController {
     def accept(params) {
         try {
             hostService.acceptPublicationRequest(params.publicationId, params.id)
-            flash.successMessage = "Solicitud aceptada con éxito"
-            redirect(action: 'viewRequest', params: [requestId: params.id, publicationId: params.publicationId])
+            flash.successMessage = "Solicitud aceptada"
+            redirect(action: 'viewRequest', params: [requestId: params.id])
         } catch (ValidationException e) {
             //TODO: lanzar excpeciones especificas para distinguir cuál fue el motivo
             flash.errors = e.errors
             flash.errorMessage = "No se pudo aceptar la solicitud!"
-            redirect(action: 'viewRequest', params: [requestId: params.id, publicationId: params.publicationId])
+            redirect(action: 'viewRequest', params: [requestId: params.id])
         }
+    }
+
+    def reject(params) {
+        hostService.rejectPublicationRequest(params.id)
+        flash.successMessage = "Solicitud rechazada"
+        redirect(action: 'viewRequest', params: [requestId: params.id])
     }
 
     def viewMyRequests() {

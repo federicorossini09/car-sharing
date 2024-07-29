@@ -48,7 +48,7 @@
                             </div>
 
                             <g:link class="stretched-link" action="viewRequest"
-                                    params="[requestId: request.id, publicationId: publication.id]"/>
+                                    params="[requestId: request.id]"/>
                         </div>
                     </div>
                 </div>

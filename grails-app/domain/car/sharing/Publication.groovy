@@ -36,8 +36,12 @@ class Publication {
         if (areDatesAvailable(requestToAccept.startDateTime, requestToAccept.endDateTime)) {
             requestToAccept.accept()
         } else {
-            th
+            throw new PublicationNotAvailableException()
         }
+    }
+
+    def rejectRequest(Request request) {
+        request.reject()
     }
 
     void addRequest(Request request) {
