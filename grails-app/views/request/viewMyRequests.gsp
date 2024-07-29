@@ -27,8 +27,8 @@
                                 </g:if>
                             </div>
 
-                            <h4 class="card-title">u$s${request.publication.price.finalValue} /día</h4>
-                            <h6 class="card-text">${request.publication.car.brand} ${request.publication.car.model} ${request.publication.car.variant}</h6>
+                            <h5 class="card-text">${request.publication.car.brand} ${request.publication.car.model} ${request.publication.car.variant}</h5>
+                            <h6 class="card-title">u$s${request.publication.price.finalValue} /día</h6>
 
                             <div class="row mb-2">
                                 <div class="col mr-2">
@@ -49,7 +49,7 @@
                             </div>
 
                             <g:link class="stretched-link" action="viewRequest"
-                                    params="[requestId: request.id, publicationId: request.publication.id]"/>
+                                    params="[requestId: request.id]"/>
                         </div>
                     </div>
                 </div>

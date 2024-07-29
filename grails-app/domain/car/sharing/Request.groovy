@@ -18,6 +18,10 @@ class Request {
         this.rent = new Rent()
     }
 
+    def reject() {
+        this.setStatus(RequestStatus.REJECTED)
+    }
+
     def dateCollision(LocalDateTime date) {
         return date >= this.startDateTime && date <= this.endDateTime
     }

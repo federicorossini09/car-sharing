@@ -14,10 +14,10 @@
             <g:each in="${activePublications}" var="publication">
                 <div class="card car-sharing-card">
                     <div class="card-body">
-                        <h4 class="card-title">u$s${publication.price.finalValue} /día</h4>
-                        <h6 class="card-text">${publication.car.brand} ${publication.car.model} ${publication.car.variant}</h6>
+                        <h5 class="card-title">${publication.car.brand} ${publication.car.model}</h5>
 
-                        <p class="card-text">${publication.car.year} - ${publication.car.kilometers}km</p>
+                        <p class="card-text">${publication.car.variant} - ${publication.car.year} - ${publication.car.kilometers}km</p>
+                        <h6 class="card-text">u$s${publication.price.finalValue} /día</h6>
                         <g:link class="stretched-link" controller="publication"
                                 action="viewPublication"
                                 id="${publication.id}"/>

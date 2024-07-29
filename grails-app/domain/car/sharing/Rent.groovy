@@ -1,5 +1,10 @@
 package car.sharing
 
+import car.sharing.exceptions.RentAlreadyActiveException
+import car.sharing.exceptions.RentAlreadyFinishedException
+import car.sharing.exceptions.RentCannotBeActivatedException
+import car.sharing.exceptions.RentCannotBeFinishedException
+
 class Rent {
     RentStatus status = RentStatus.SCHEDULED
 
@@ -17,11 +22,20 @@ class Rent {
     }
 
     boolean activate(Integer currentKilometers) {
+        if (this.status == RentStatus.ACTIVE)
+            throw new RentAlreadyActiveException()
+        if (this.status != RentStatus.SCHEDULED)
+            throw new RentCannotBeActivatedException()
         this.setKilometersDelivered(currentKilometers)
         this.status = RentStatus.ACTIVE
     }
 
     boolean finish(Integer kilometers) {
+        if (this.status == RentStatus.FINISHED)
+            throw new RentAlreadyFinishedException()
+        if (this.status != RentStatus.ACTIVE) {
+            throw new RentCannotBeFinishedException()
+        }
         this.setKilometersReturned(kilometers)
         this.setStatus(RentStatus.FINISHED)
     }

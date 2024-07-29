@@ -1,5 +1,6 @@
 package car.sharing
 
+import car.sharing.exceptions.GuestDoesNotOwnsRequestException
 import car.sharing.exceptions.HostCannotRequestHisPublication
 
 import java.time.LocalDateTime
@@ -32,15 +33,15 @@ class Guest {
     }
 
     void reportUndelivered(Request request, Publication publication) {
+        this.checkOwnsRequest(request)
         request.reportUndelivered()
-        // todo solo puedo reportar si yo soy el guest
         //todo esto de abajo deberia ir en el metodo de arriba
         publication.penalize(PenaltyReason.NotDeliverOnTime)
     }
 
     void reportSuccessfulDeliver(Request request, Integer currentKilometers) {
+        this.checkOwnsRequest(request)
         request.reportSuccessfulDeliver(currentKilometers)
-
     }
 
     boolean cancelRent(Rent rent) {
@@ -49,5 +50,10 @@ class Guest {
 
     def ownsRequest(Request request) {
         requests.any { it.isSameAs(request) }
+    }
+
+    def checkOwnsRequest(Request request) {
+        if (!this.ownsRequest(request))
+            throw new GuestDoesNotOwnsRequestException()
     }
 }

@@ -49,16 +49,24 @@ class Host {
         publication.acceptRequest(request)
     }
 
+    def rejectPublicationRequest(Request request, Publication publication) {
+        this.checkHostsPublication(publication)
+        publication.rejectRequest(request)
+    }
+
+
     def hasUser(User user) {
         this.user.isSameAs(user)
     }
 
     void reportNotReturned(Request request, Publication publication) {
+        this.checkHostsPublication(publication)
         request.reportNotReturned()
-        //todo publication.penalize()
+        //todo guest.penalize()
     }
 
     void reportSuccessfulReturn(Request request, Integer kilometers) {
+        this.checkHostsPublication(request.publication)
         request.reportSuccessfulReturn(kilometers)
     }
 

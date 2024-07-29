@@ -70,7 +70,7 @@ class HostService {
         host.unpublish(publication)
     }
 
-
+    //TODO: recibiendo unicamente el request id deberia alcanzar
     def acceptPublicationRequest(publicationId, requestId) {
         def host = getLoggedHost()
         def publication = publicationService.getById(publicationId)
@@ -81,6 +81,13 @@ class HostService {
         request.save()
         publication.save()
     }
+
+    def rejectPublicationRequest(Long requestId) {
+        def host = getLoggedHost()
+        def request = requestService.getById(requestId)
+        host.rejectPublicationRequest(request, request.publication)
+    }
+
 
     def getMyPublicationRequests(publicationId) {
         def host = getLoggedHost()
@@ -101,4 +108,24 @@ class HostService {
         }
     }
 
+    def notifyReturn(Long requestId) {
+        def host = getLoggedHost()
+        if (!host)
+            throw new HostNotFoundException()
+        def request = requestService.getById(requestId)
+        //TODO: receive real kilometers
+        host.reportSuccessfulReturn(request, 10)
+        request.save(failOnError: true)
+    }
+
+    def reportNotReturned(Long requestId) {
+        def host = getLoggedHost()
+        if (!host)
+            throw new HostNotFoundException()
+        def request = requestService.getById(requestId)
+        def publication = request.publication
+        host.reportNotReturned(request, publication)
+        publication.save(failOnError: true)
+        request.save(failOnError: true)
+    }
 }

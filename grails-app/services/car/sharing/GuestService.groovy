@@ -37,4 +37,21 @@ class GuestService {
         def guest = getLoggedGuest();
         guest.requests
     }
+
+    def notifyDelivery(Long requestId) {
+        def guest = getLoggedGuest()
+        def request = requestService.getById(requestId)
+        //TODO: receive real kilometers
+        guest.reportSuccessfulDeliver(request, 10)
+        request.save(failOnError: true)
+    }
+
+    def reportNotDelivered(Long requestId) {
+        def guest = getLoggedGuest()
+        def request = requestService.getById(requestId)
+        def publication = request.publication
+        guest.reportUndelivered(request, publication)
+        publication.save(failOnError: true)
+        request.save(failOnError: true)
+    }
 }
