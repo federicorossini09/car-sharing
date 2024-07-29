@@ -75,4 +75,8 @@ class Host {
             publication.sendReview(review);
         }
     }
+
+    def cancelRent(Request request) {
+        request.cancelFromHost()
+    }
 }

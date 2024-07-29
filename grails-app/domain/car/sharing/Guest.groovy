@@ -44,8 +44,8 @@ class Guest {
         request.reportSuccessfulDeliver(currentKilometers)
     }
 
-    boolean cancelRent(Rent rent) {
-        rent.cancel()
+    def cancelRent(Request request) {
+        request.cancelFromGuest()
     }
 
     def ownsRequest(Request request) {

@@ -13,6 +13,7 @@ class Request {
     Rent rent
     RequestStatus status = RequestStatus.WAITING
 
+
     def accept() {
         this.setStatus(RequestStatus.ACCEPTED)
         this.rent = new Rent()
@@ -53,7 +54,7 @@ class Request {
         //todo chequear que este en estado cancelable
 
          */
-        rent.cancel()
+        rent.reportUndelivered()
 
 
     }
@@ -70,7 +71,7 @@ class Request {
         } else if (!rent.isActive()) {
             //todo validar qeu este activa
         }*/
-        rent.cancel()
+        rent.reportNotReturned()
     }
 
     def reportSuccessfulReturn(Integer kilometers) {
@@ -81,6 +82,14 @@ class Request {
 
     def isFinished() {
         this.rent.isFinished()
+    }
+
+    def cancelFromHost() {
+        this.rent.cancelFromHost()
+    }
+
+    def cancelFromGuest() {
+        this.rent.cancelFromGuest(this.startDateTime)
     }
 
 }
