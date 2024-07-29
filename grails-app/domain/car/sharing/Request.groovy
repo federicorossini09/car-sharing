@@ -1,7 +1,12 @@
 package car.sharing
 
+import car.sharing.exceptions.RentIsNotActiveException
+import car.sharing.exceptions.RentNotReturnedNotAvailableException
+import car.sharing.exceptions.RentNotScheduledException
+import car.sharing.exceptions.RentUndeliverNotAvailableException
 
 import java.time.LocalDateTime
+import java.time.temporal.ChronoUnit
 
 class Request {
 
@@ -45,15 +50,11 @@ class Request {
     }
 
     void reportUndelivered() {
-        /*
-        if (this.isNotScheduled()) {
-            //todo throw error porque tiene que estar programada
-        } else if (this.couldReportUndeliver()) {
-            //todo throw error porque tiene que esperar cierto tiempo
+        if (!this.rent.isScheduled()) {
+            throw new RentNotScheduledException()
+        } else if (!this.couldReportUndeliver()) {
+            throw new RentUndeliverNotAvailableException()
         }
-        //todo chequear que este en estado cancelable
-
-         */
         rent.reportUndelivered()
 
 
@@ -64,13 +65,11 @@ class Request {
     }
 
     def reportNotReturned() {
-        /*if (this.isNotActive()) {
-            //todo throw error porque tiene que estar activa
-        } else if (this.couldReportNotReturned()) {
-            //todo throw error porque tiene que
-        } else if (!rent.isActive()) {
-            //todo validar qeu este activa
-        }*/
+        if (!this.rent.isActive()) {
+            throw new RentIsNotActiveException()
+        } else if (!this.couldReportNotReturned()) {
+            throw new RentNotReturnedNotAvailableException()
+        }
         rent.reportNotReturned()
     }
 
@@ -92,4 +91,15 @@ class Request {
         this.rent.cancelFromGuest(this.startDateTime)
     }
 
+    def couldReportUndeliver() {
+        def now = LocalDateTime.now()
+        long hourDifference = ChronoUnit.HOURS.between(this.startDateTime, now)
+        return hourDifference > 2
+    }
+
+    def couldReportNotReturned() {
+        def now = LocalDateTime.now()
+        long hourDifference = ChronoUnit.HOURS.between(this.endDateTime, now)
+        return hourDifference > 2
+    }
 }
