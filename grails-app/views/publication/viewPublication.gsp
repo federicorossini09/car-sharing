@@ -23,15 +23,22 @@
                             </button>
                         </div>
                     </g:if>
-                    <g:if test="${isHost}">
-                        <g:if test="${publication.status == PublicationStatus.ACTIVE}">
-                            <span class="badge badge-success">Activada</span>
-                        </g:if>
-                        <g:if test="${publication.status == PublicationStatus.PENDING}">
-                            <span class="badge badge-warning">Desactivada</span>
-                        </g:if>
-                    </g:if>
-                    <span class="text-muted">#${publication.id}</span>
+                    <div class="row">
+                        <div class="col">
+                            <span class="text-muted">#${publication.id}</span>
+                        </div>
+
+                        <div class="col text-right">
+                            <g:if test="${isHost}">
+                                <g:if test="${publication.status == PublicationStatus.ACTIVE}">
+                                    <span class="badge badge-success">Activada</span>
+                                </g:if>
+                                <g:if test="${publication.status == PublicationStatus.PENDING}">
+                                    <span class="badge badge-warning">Desactivada</span>
+                                </g:if>
+                            </g:if>
+                        </div>
+                    </div>
 
                     <div class="row">
                         <div class="col">
