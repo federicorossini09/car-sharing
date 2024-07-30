@@ -81,4 +81,8 @@ class Publication {
     def calculateScore() {
         score.calculate()
     }
+
+    def isFeatured() {
+        this.score.isFeatured()
+    }
 }

@@ -38,6 +38,14 @@
   cursor: pointer;
 }
 
+.rating-show {
+  position: relative;
+  /*width: 1em;*/
+  font-size: 20px;
+  color: #FFD600;
+  content: "\2605";
+}
+
 .rating > label::before {
   content: "\2605";
   position: absolute;

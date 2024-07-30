@@ -158,7 +158,7 @@ class PublicationSpec extends Specification implements DomainUnitTest<Publicatio
         given: "an existing publication"
         def newPublication = new Publication(host: host, car: car)
         when: "i it has two reviews"
-        def review1 = new Review(text: "muy bueno loco", score: 5)
+        def review1 = new Review(text: "muy bueno", score: 5)
         def review2 = new Review(text: "no me fue tan bien", score: 1)
         newPublication.receiveReview(review1)
         newPublication.receiveReview(review2)
@@ -166,5 +166,29 @@ class PublicationSpec extends Specification implements DomainUnitTest<Publicatio
         def score = newPublication.calculateScore()
         then: "its the average"
         score == 3
+    }
+
+    void "is featured"() {
+        given: "an existing publication with one review of score 5"
+        def newPublication = new Publication(host: host, car: car)
+        def review1 = new Review(text: "muy bueno", score: 5)
+        newPublication.receiveReview(review1)
+        when: "is reviewed again with a review of score 5"
+        def review2 = new Review(text: "excelente", score: 5)
+        newPublication.receiveReview(review2)
+        then: "it becomes featured"
+        newPublication.isFeatured()
+    }
+
+    void "is not featured"() {
+        given: "an existing publication with one review of score 4"
+        def newPublication = new Publication(host: host, car: car)
+        def review1 = new Review(text: "muy bueno", score: 4)
+        newPublication.receiveReview(review1)
+        when: "is reviewed again with a review of score 4"
+        def review2 = new Review(text: "excelente", score: 4)
+        newPublication.receiveReview(review2)
+        then: "it remains not featured"
+        !newPublication.isFeatured()
     }
 }

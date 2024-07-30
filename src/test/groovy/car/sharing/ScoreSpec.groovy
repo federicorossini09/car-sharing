@@ -15,8 +15,10 @@ class ScoreSpec extends Specification implements DomainUnitTest<Score> {
     void "default score at creation"() {
         when: "a score is created without parameters"
         def score = new Score()
-        then: "its default value is 3"
-        score.value == 3
+        then: "it is not ready"
+        !score.isReady()
+        and: "it does not have a value"
+        !score.value
     }
 
     void "score without penalties calculates as average"() {

@@ -2,13 +2,16 @@ package car.sharing
 
 class Score {
 
-    //todo ver que hacer con el value
-    BigDecimal value = 3
+    BigDecimal value
     List<Review> reviews = []
     List<Penalty> penalties = []
 
     static constraints = {
+        value nullable: true
     }
+
+    static final Integer MIN_REVIEWS_NEEDED_TO_SCORE = 1
+    static final BigDecimal MIN_FEATURED_VALUE = BigDecimal.valueOf(4.5)
 
     def penalize(PenaltyReason reason) {
         def penalty = new Penalty(reason)
@@ -17,12 +20,13 @@ class Score {
     }
 
     def isReady() {
-        this.reviews.size() > 1
+        this.reviews.size() > MIN_REVIEWS_NEEDED_TO_SCORE
     }
 
     def calculate() {
         if (this.isReady()) {
-            def total = reviews.sum { it.score } / reviews.size()
+            def total = BigDecimal.ZERO
+            total = reviews.sum { it.score } / reviews.size()
             penalties.each { penalty ->
                 total = penalty.apply(total)
             }
@@ -34,5 +38,12 @@ class Score {
     def receiveReview(Review review) {
         this.reviews << review
         this.calculate()
+    }
+
+    def isFeatured() {
+        if (this.isReady())
+            this.value >= MIN_FEATURED_VALUE
+        else
+            false
     }
 }

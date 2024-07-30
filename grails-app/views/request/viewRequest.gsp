@@ -1,4 +1,4 @@
-<%@ page import="car.sharing.RentStatus; car.sharing.RequestStatus" contentType="text/html;charset=UTF-8" %>
+<%@ page import="java.time.format.DateTimeFormatter; car.sharing.RentStatus; car.sharing.RequestStatus" contentType="text/html;charset=UTF-8" %>
 <html>
 <head>
     <title>Solicitud</title>
@@ -30,7 +30,7 @@
         <h4 class="text-center">${car.brand} ${car.model} ${car.variant}</h4>
         <g:if test="${request.rent}">
             <div class="row mb-2">
-                <div class="col-sm-8 mx-auto">
+                <div class="col mx-auto">
                     <div class="card">
                         <div class="card-body">
                             <h3 class="card-title text-center text-muted">
@@ -211,6 +211,35 @@
                         </g:if>
                     </div>
                 </div>
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-sm-8 mx-auto">
+                <h5 class="text-muted">Reseña del ${isGuestRequest ? 'anfitrión' : 'huésped'}</h5>
+                <g:set var="review"
+                       value="${isGuestRequest ? request.guest.score.reviews.find { it.request.id == request.id } :
+                               request.publication.score.reviews.find { it.request.id == request.id }}"/>
+                <g:if test="${review}">
+                    <div class="row">
+                        <div class="col">
+                            <div class="text-muted"
+                                 style="font-size: 14px">
+                                <g:set var="reviewUser"
+                                       value="${isGuestRequest ? review.request.publication.host.user.username :
+                                               review.request.guest.user.username}"/>
+                                ${reviewUser} | ${review.createdAt.format(DateTimeFormatter.ISO_DATE)}
+                            </div>
+                            <g:each var="i" in="${(0..<review.score)}">
+                                <span class="rating-show">★</span>
+                            </g:each>
+                            <p>${review.text}</p>
+                        </div>
+                    </div>
+                </g:if>
+                <g:else>
+                    <p>Todavía no recibiste una reseña</p>
+                </g:else>
             </div>
         </div>
 
