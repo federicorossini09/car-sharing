@@ -74,12 +74,15 @@ class Publication {
         score.penalize(reason)
     }
 
-    def sendReview(Review review) {
-        score.sendReview(review)
-
+    def receiveReview(Review review) {
+        score.receiveReview(review)
     }
 
     def calculateScore() {
         score.calculate()
+    }
+
+    def isFeatured() {
+        this.score.isFeatured()
     }
 }

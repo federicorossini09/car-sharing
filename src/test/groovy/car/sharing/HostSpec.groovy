@@ -1,6 +1,7 @@
 package car.sharing
 
 import car.sharing.exceptions.HostDoesNotOwnPublicationException
+import car.sharing.exceptions.ReviewAlreadySent
 import grails.testing.gorm.DomainUnitTest
 import spock.lang.Shared
 import spock.lang.Specification
@@ -42,8 +43,7 @@ class HostSpec extends Specification implements DomainUnitTest<Host> {
         publication1.id = 1
         publication2 = new Publication(car: car, price: price)
         publication1.id = 2
-        def guest2 = new Guest(user: user2)
-
+        guest2 = new Guest(user: user2)
     }
 
     def cleanup() {
@@ -119,4 +119,36 @@ class HostSpec extends Specification implements DomainUnitTest<Host> {
         //todo aca no deberia ser otro tipo?
         request1.rent.isCanceled()
     }
+
+    void "review guest"() {
+        given: "a host that owns a publication with a rent finished"
+        host.addToPublications(publication1)
+        request1 = new Request(deliveryPlace: "place1", returnPlace: "place2", startDate: "2024-01-01", endDate: "2024-01-03", guest: guest2)
+        guest2.addToRequests(request1)
+        publication1.addRequest(request1)
+        request1.accept()
+        guest2.reportSuccessfulDeliver(request1, 10)
+        host.reportSuccessfulReturn(request1, 20)
+        when: "he reviews the guest"
+        host.reviewGuest(request1, new Review(score: 3, text: 'something', request: request1))
+        then: "the review is added to reviews sent"
+        host.isReviewAlreadySent(request1)
+    }
+
+    void "cannot review guest twice for the same request"() {
+        given: "a host already reviewed the guest"
+        host.addToPublications(publication1)
+        request1 = new Request(deliveryPlace: "place1", returnPlace: "place2", startDate: "2024-01-01", endDate: "2024-01-03", guest: guest2)
+        guest2.addToRequests(request1)
+        publication1.addRequest(request1)
+        request1.accept()
+        guest2.reportSuccessfulDeliver(request1, 10)
+        host.reportSuccessfulReturn(request1, 20)
+        host.reviewGuest(request1, new Review(score: 3, text: 'something', request: request1))
+        when: "he tries to review the guest a second time"
+        host.reviewGuest(request1, new Review(score: 4, text: 'another thing', request: request1))
+        then: "a review already sent exception is thrown"
+        thrown ReviewAlreadySent
+    }
+
 }

@@ -54,4 +54,15 @@ class GuestService {
         publication.save(failOnError: true)
         request.save(failOnError: true)
     }
+
+    def reviewPublication(Long requestId, params) {
+        def guest = getLoggedGuest()
+        def request = requestService.getById(requestId)
+
+        def review = new Review(score: params.score, text: params.text, request: request)
+        review.save(failOnError: true)
+
+        guest.reviewPublication(request, review)
+        request.save(failOnError: true)
+    }
 }

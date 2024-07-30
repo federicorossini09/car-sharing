@@ -1,12 +1,13 @@
 package car.sharing
 
 import car.sharing.exceptions.HostDoesNotOwnPublicationException
+import car.sharing.exceptions.ReviewAlreadySent
 
 class Host {
 
     User user
 
-    static hasMany = [publications: Publication]
+    static hasMany = [publications: Publication, reviewsSent: Review]
 
     static constraints = {
     }
@@ -70,9 +71,19 @@ class Host {
         request.reportSuccessfulReturn(kilometers)
     }
 
-    void doReview(Request request, Publication publication, Review review) {
-        if (request.isFinished()) {
-            publication.sendReview(review);
-        }
+    void reviewGuest(Request request, Review review) {
+        this.checkHostsPublication(request.publication)
+        this.checkReviewAlreadySent(request)
+        request.sendGuestReview(review)
+        this.addToReviewsSent(review)
+    }
+
+    def checkReviewAlreadySent(Request request) {
+        if (isReviewAlreadySent(request))
+            throw new ReviewAlreadySent()
+    }
+
+    def isReviewAlreadySent(Request request) {
+        reviewsSent.any { it.sentForRequest(request) }
     }
 }

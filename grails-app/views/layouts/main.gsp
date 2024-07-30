@@ -32,9 +32,6 @@
                 </g:link>
             </li>
             <li class="nav-item active">
-                <a class="nav-link" href="#">Mis Rentas <span class="sr-only">(current)</span></a>
-            </li>
-            <li class="nav-item active">
                 <g:link class="nav-link" controller="publication" action="myPublications">
                     Mis Publicaciones
                 </g:link>

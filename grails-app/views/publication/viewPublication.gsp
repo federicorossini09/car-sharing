@@ -1,4 +1,4 @@
-<%@ page import="car.sharing.PublicationStatus" contentType="text/html;charset=UTF-8" %>
+<%@ page import="java.time.format.DateTimeFormatter; car.sharing.PublicationStatus" contentType="text/html;charset=UTF-8" %>
 <html>
 <head>
     <title>Publicación</title>
@@ -126,6 +126,32 @@
             </div>
         </div>
     </div>
+
+    <g:if test="${!publication.score.reviews.isEmpty()}">
+        <div class="row mt-4">
+            <div class="col-sm-8 mx-auto">
+                <h5 class="text-muted">Reseñas sobre esta publicación</h5>
+                <ul class="list-group list-group-flush">
+                    <g:each in="${publication.score.reviews.reverse()}" var="review">
+                        <li class="list-group-item">
+                            <div class="row">
+                                <div class="col">
+                                    <div class="text-muted"
+                                         style="font-size: 14px">
+                                        ${review.request.guest.user.username} | ${review.createdAt.format(DateTimeFormatter.ISO_DATE)}
+                                    </div>
+                                    <g:each var="i" in="${(0..<review.score)}">
+                                        <span class="rating-show">★</span>
+                                    </g:each>
+                                    <p>${review.text}</p>
+                                </div>
+                            </div>
+                        </li>
+                    </g:each>
+                </ul>
+            </div>
+        </div>
+    </g:if>
 </div>
 
 </body>
