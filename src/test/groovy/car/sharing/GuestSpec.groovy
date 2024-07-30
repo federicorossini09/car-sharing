@@ -1,6 +1,7 @@
 package car.sharing
 
 import car.sharing.exceptions.HostCannotRequestHisPublication
+import car.sharing.exceptions.ReviewAlreadySent
 import grails.testing.gorm.DomainUnitTest
 import spock.lang.Shared
 import spock.lang.Specification
@@ -71,8 +72,8 @@ class GuestSpec extends Specification implements DomainUnitTest<Guest> {
         def newPublication = new Publication(host: host, car: car)
         def review1 = new Review(text: "muy bueno", score: 5)
         def review2 = new Review(text: "muy malo", score: 1)
-        newPublication.sendReview(review1)
-        newPublication.sendReview(review2)
+        newPublication.receiveReview(review1)
+        newPublication.receiveReview(review2)
         and: "a request is sent by a Guest "
         def guest = new Guest(user: user2)
         def startDate = LocalDateTime.parse("2024-01-01T00:00:00")
@@ -105,6 +106,22 @@ class GuestSpec extends Specification implements DomainUnitTest<Guest> {
         guest.reportSuccessfulDeliver(request, 55000)
         then: "the rent is active"
         request.rent.isActive()
+    }
+
+    void "cannot review publication twice for the same request"() {
+        given: "a guest that already reviewed a publication"
+        def newPublication = new Publication(host: host, car: car)
+        def startDate = LocalDateTime.parse("2024-01-01T00:00:00")
+        def returnDate = LocalDateTime.parse("2024-01-03T00:00:00")
+        def request = guest.addRequest(newPublication, "place1", "place2", startDate, returnDate)
+        request.accept()
+        request.reportSuccessfulDeliver(10)
+        request.reportSuccessfulReturn(20)
+        guest.reviewPublication(request, new Review(score: 3, text: 'something', request: request))
+        when: "he tries to review the publication a second time"
+        guest.reviewPublication(request, new Review(score: 4, text: 'another thing', request: request))
+        then: "a review already sent exception is thrown"
+        thrown ReviewAlreadySent
     }
 
 }

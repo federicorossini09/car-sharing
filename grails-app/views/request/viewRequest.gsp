@@ -98,6 +98,14 @@
                                     </div>
                                 </g:if>
                                 <div class="col d-flex justify-content-center">
+                                    <g:link name="newReview" controller="review"
+                                            action="newReview"
+                                            params="[requestId: request.id, isGuestRequest: isGuestRequest, isHostPublication: isHostPublication]">
+                                        <button class="btn btn-primary">Hacer una Reseña</button>
+                                    </g:link>
+                                </div>
+
+                                <div class="col d-flex justify-content-center">
                                     <g:form name="cancel" action="cancel" id="${request.rent.id}">
                                         <g:submitButton class="btn btn-danger"
                                                         name="Submit"
@@ -180,7 +188,8 @@
                     </div>
 
                     <div class="card-footer">
-                        <g:link name="publish" controller="publication" action="viewPublication"
+                        <g:link name="viewPublication" controller="publication"
+                                action="viewPublication"
                                 params="[id: request.publication.id, *: params]">
                             <button class="btn btn-info float-left">Ver Publicación</button>
                         </g:link>

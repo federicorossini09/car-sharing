@@ -1,5 +1,7 @@
 package car.sharing
 
+import car.sharing.exceptions.GuestCannotBeReviewedYet
+import car.sharing.exceptions.PublicationCannotBeReviewedYet
 
 import java.time.LocalDateTime
 
@@ -83,4 +85,17 @@ class Request {
         this.rent.isFinished()
     }
 
+    def sendPublicationReview(Review review) {
+        if (!this.rent.isFinished()) {
+            throw new PublicationCannotBeReviewedYet()
+        }
+        this.publication.receiveReview(review)
+    }
+
+    def sendGuestReview(Review review) {
+        if (!this.rent.isFinished()) {
+            throw new GuestCannotBeReviewedYet()
+        }
+        this.guest.receiveReview(review)
+    }
 }

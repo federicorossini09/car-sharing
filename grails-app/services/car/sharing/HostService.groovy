@@ -128,4 +128,17 @@ class HostService {
         publication.save(failOnError: true)
         request.save(failOnError: true)
     }
+
+    def reviewGuest(Long requestId, params) {
+        def host = getLoggedHost()
+        if (!host)
+            throw new HostNotFoundException()
+        def request = requestService.getById(requestId)
+
+        def review = new Review(score: params.score, text: params.text, request: request)
+        review.save(failOnError: true)
+
+        host.reviewGuest(request, review)
+        request.save(failOnError: true)
+    }
 }

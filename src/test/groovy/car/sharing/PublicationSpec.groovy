@@ -131,8 +131,8 @@ class PublicationSpec extends Specification implements DomainUnitTest<Publicatio
         when: "it has two review"
         def review1 = new Review(text: "muy bueno", score: 5)
         def review2 = new Review(text: "muy malo", score: 1)
-        newPublication.sendReview(review1)
-        newPublication.sendReview(review2)
+        newPublication.receiveReview(review1)
+        newPublication.receiveReview(review2)
         and: "i penalize it"
         newPublication.penalize(PenaltyReason.NotDeliverOnTime)
         then: "its score decreases 10%"
@@ -148,9 +148,9 @@ class PublicationSpec extends Specification implements DomainUnitTest<Publicatio
         request.accept()
         when: "i send a review for that requst"
         def review2 = new Review(text: "no me fue tan bien", score: 3)
-        newPublication.sendReview(review2)
+        newPublication.receiveReview(review2)
         then: "the review was added to the list"
-        newPublication.score.reviews.size()==1
+        newPublication.score.reviews.size() == 1
     }
 
 
@@ -160,8 +160,8 @@ class PublicationSpec extends Specification implements DomainUnitTest<Publicatio
         when: "i it has two reviews"
         def review1 = new Review(text: "muy bueno loco", score: 5)
         def review2 = new Review(text: "no me fue tan bien", score: 1)
-        newPublication.sendReview(review1)
-        newPublication.sendReview(review2)
+        newPublication.receiveReview(review1)
+        newPublication.receiveReview(review2)
         and: "i ask for the score of the publication"
         def score = newPublication.calculateScore()
         then: "its the average"
