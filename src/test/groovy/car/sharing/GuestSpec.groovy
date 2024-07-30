@@ -108,12 +108,30 @@ class GuestSpec extends Specification implements DomainUnitTest<Guest> {
         request.rent.isActive()
     }
 
+    void "review publication"() {
+        given: "a guest that requested a publication and the rent is finished"
+        def newPublication = new Publication(host: host, car: car)
+        def startDate = LocalDateTime.parse("2024-01-01T00:00:00")
+        def returnDate = LocalDateTime.parse("2024-01-03T00:00:00")
+        def request = guest.addRequest(newPublication, "place1", "place2", startDate, returnDate)
+        request.setId(1)
+        request.accept()
+        request.reportSuccessfulDeliver(10)
+        request.reportSuccessfulReturn(20)
+        when: "when the guest reviews the publication"
+        def review = new Review(score: 3, text: 'something', request: request)
+        guest.reviewPublication(request, review)
+        then: "the review is added to guest reviews sent"
+        guest.isReviewAlreadySent(request)
+    }
+
     void "cannot review publication twice for the same request"() {
         given: "a guest that already reviewed a publication"
         def newPublication = new Publication(host: host, car: car)
         def startDate = LocalDateTime.parse("2024-01-01T00:00:00")
         def returnDate = LocalDateTime.parse("2024-01-03T00:00:00")
         def request = guest.addRequest(newPublication, "place1", "place2", startDate, returnDate)
+        request.setId(1)
         request.accept()
         request.reportSuccessfulDeliver(10)
         request.reportSuccessfulReturn(20)

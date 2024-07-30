@@ -79,7 +79,11 @@ class Host {
     }
 
     def checkReviewAlreadySent(Request request) {
-        if (reviewsSent.any { it.sentForRequest(request) })
+        if (isReviewAlreadySent(request))
             throw new ReviewAlreadySent()
+    }
+
+    def isReviewAlreadySent(Request request) {
+        reviewsSent.any { it.sentForRequest(request) }
     }
 }

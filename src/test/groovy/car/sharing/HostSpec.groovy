@@ -120,6 +120,21 @@ class HostSpec extends Specification implements DomainUnitTest<Host> {
         request1.rent.isCanceled()
     }
 
+    void "review guest"() {
+        given: "a host that owns a publication with a rent finished"
+        host.addToPublications(publication1)
+        request1 = new Request(deliveryPlace: "place1", returnPlace: "place2", startDate: "2024-01-01", endDate: "2024-01-03", guest: guest2)
+        guest2.addToRequests(request1)
+        publication1.addRequest(request1)
+        request1.accept()
+        guest2.reportSuccessfulDeliver(request1, 10)
+        host.reportSuccessfulReturn(request1, 20)
+        when: "he reviews the guest"
+        host.reviewGuest(request1, new Review(score: 3, text: 'something', request: request1))
+        then: "the review is added to reviews sent"
+        host.isReviewAlreadySent(request1)
+    }
+
     void "cannot review guest twice for the same request"() {
         given: "a host already reviewed the guest"
         host.addToPublications(publication1)
