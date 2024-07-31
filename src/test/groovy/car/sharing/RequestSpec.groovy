@@ -38,7 +38,7 @@ class RequestSpec extends Specification implements DomainUnitTest<Request> {
     void "create request success"() {
         given: "an existing guest"
         when: "a request is created"
-        def newRequest = new Request(publication: publication, deliveryPlace: "place1", returnPlace: "place2", startDateTime: "2024-01-01T00:00:00", endDateTime: "2024-01-03T00:00:00", guest: guest)
+        def newRequest = new Request(publication: publication, deliveryPlace: "place1", returnPlace: "place2", startDateTime: "2024-01-01T00:00:00", endDateTime: "2024-01-03T00:00:00", kilometers: 500, guest: guest)
         def requestIsValid = newRequest.validate()
         then: "the request is created successfully "
         requestIsValid && (newRequest.guest.user.username == user2.username)
@@ -63,7 +63,7 @@ class RequestSpec extends Specification implements DomainUnitTest<Request> {
         def newRequest = new Request(publication: publication, deliveryPlace: "place1", returnPlace: "place2", startDateTime: startDate, endDateTime: returnDate, guest: guest)
         newRequest.accept()
         when: "the  deliver is reported"
-        newRequest.reportSuccessfulDeliver()
+        newRequest.reportSuccessfulDeliver(50000)
         then: "rent is activated"
         newRequest.rent.status == RentStatus.ACTIVE
     }

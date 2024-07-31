@@ -20,7 +20,9 @@ class GuestService {
         def publication = publicationService.getById(publicationId)
         def guest = getLoggedGuest()
 
-        def request = guest.addRequest(publication, params.deliveryPlace, params.returnPlace, params.startDateTime, params.endDateTime).save(failOnError: true)
+        def request = guest.addRequest(publication,
+                params.deliveryPlace, params.returnPlace, params.startDateTime, params.endDateTime,
+                params.kilometers).save(failOnError: true)
 
         publication.save(failOnError: true)
 
@@ -38,11 +40,10 @@ class GuestService {
         guest.requests
     }
 
-    def notifyDelivery(Long requestId) {
+    def notifyDelivery(params) {
         def guest = getLoggedGuest()
-        def request = requestService.getById(requestId)
-        //TODO: receive real kilometers
-        guest.reportSuccessfulDeliver(request, 10)
+        def request = requestService.getById(params.id)
+        guest.reportSuccessfulDelivery(request, params.kilometersDelivered)
         request.save(failOnError: true)
     }
 

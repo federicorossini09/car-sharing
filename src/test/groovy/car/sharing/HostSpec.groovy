@@ -1,6 +1,8 @@
 package car.sharing
 
 import car.sharing.exceptions.HostDoesNotOwnPublicationException
+import car.sharing.exceptions.KilometersReturnedBelowDeliveredException
+import car.sharing.exceptions.ReturnNotifiedWithoutKilometersException
 import car.sharing.exceptions.ReviewAlreadySent
 import grails.testing.gorm.DomainUnitTest
 import spock.lang.Shared
@@ -106,6 +108,48 @@ class HostSpec extends Specification implements DomainUnitTest<Host> {
         publication1.status == PublicationStatus.ACTIVE
     }
 
+    void "report successful return"() {
+        given: "a host that owns a publication with an active rent"
+        host.addToPublications(publication1)
+        request1 = new Request(deliveryPlace: "place1", returnPlace: "place2", startDate: "2024-01-01", endDate: "2024-01-03", guest: guest2)
+        guest2.addToRequests(request1)
+        publication1.addRequest(request1)
+        request1.accept()
+        guest2.reportSuccessfulDelivery(request1, 50000)
+        when: "the return is reported"
+        host.reportSuccessfulReturn(request1, 50500)
+        then: "the rent is finished"
+        request1.rent.isFinished()
+    }
+
+    void "cannot report return with less kilometers than delivered"() {
+        given: "a host that owns a publication with an active rent"
+        host.addToPublications(publication1)
+        request1 = new Request(deliveryPlace: "place1", returnPlace: "place2", startDate: "2024-01-01", endDate: "2024-01-03", guest: guest2)
+        guest2.addToRequests(request1)
+        publication1.addRequest(request1)
+        request1.accept()
+        guest2.reportSuccessfulDelivery(request1, 50000)
+        when: "the return is reported with 40000km"
+        host.reportSuccessfulReturn(request1, 40000)
+        then: "a kilometers returned below delivered exception is thrown"
+        thrown KilometersReturnedBelowDeliveredException
+    }
+
+    void "cannot report return without kilometers returned"() {
+        given: "a host that owns a publication with an active rent"
+        host.addToPublications(publication1)
+        request1 = new Request(deliveryPlace: "place1", returnPlace: "place2", startDate: "2024-01-01", endDate: "2024-01-03", guest: guest2)
+        guest2.addToRequests(request1)
+        publication1.addRequest(request1)
+        request1.accept()
+        guest2.reportSuccessfulDelivery(request1, 50000)
+        when: "the return is reported without kilometers"
+        host.reportSuccessfulReturn(request1, null)
+        then: "a return notified without kilometers exception is thrown"
+        thrown ReturnNotifiedWithoutKilometersException
+    }
+
     void "host reports not returned car"() {
         given: "an existing host that has an accepted publication"
         host.addToPublications(publication1)
@@ -116,7 +160,7 @@ class HostSpec extends Specification implements DomainUnitTest<Host> {
         publication1.addRequest(request1)
         request1.accept()
         and: "the  car was delivered by the host"
-        request1.reportSuccessfulDeliver(20000)
+        request1.reportSuccessfulDeliver(50000)
         when: "the host reports that the car was not returned by the guest"
         request1.reportNotReturned()
         then: "the publication is (canceled?)"
@@ -130,8 +174,8 @@ class HostSpec extends Specification implements DomainUnitTest<Host> {
         guest2.addToRequests(request1)
         publication1.addRequest(request1)
         request1.accept()
-        guest2.reportSuccessfulDeliver(request1, 10)
-        host.reportSuccessfulReturn(request1, 20)
+        guest2.reportSuccessfulDelivery(request1, 50000)
+        host.reportSuccessfulReturn(request1, 50500)
         when: "he reviews the guest"
         host.reviewGuest(request1, new Review(score: 3, text: 'something', request: request1))
         then: "the review is added to reviews sent"
@@ -145,8 +189,8 @@ class HostSpec extends Specification implements DomainUnitTest<Host> {
         guest2.addToRequests(request1)
         publication1.addRequest(request1)
         request1.accept()
-        guest2.reportSuccessfulDeliver(request1, 10)
-        host.reportSuccessfulReturn(request1, 20)
+        guest2.reportSuccessfulDelivery(request1, 50000)
+        host.reportSuccessfulReturn(request1, 50500)
         host.reviewGuest(request1, new Review(score: 3, text: 'something', request: request1))
         when: "he tries to review the guest a second time"
         host.reviewGuest(request1, new Review(score: 4, text: 'another thing', request: request1))

@@ -1,8 +1,10 @@
 package car.sharing
 
+import car.sharing.exceptions.DeliveryNotifiedWithoutKilometersException
 import car.sharing.exceptions.GuestDoesNotOwnsRequestException
 import car.sharing.exceptions.HostCannotRequestHisPublication
 import car.sharing.exceptions.ReviewAlreadySent
+import org.springframework.lang.Nullable
 
 import java.time.LocalDateTime
 
@@ -15,13 +17,13 @@ class Guest {
     static constraints = {
     }
 
-    def addRequest(Publication publication, String deliveryPlace, String returnPlace, LocalDateTime startDate, LocalDateTime endDate) {
+    def addRequest(Publication publication, String deliveryPlace, String returnPlace, LocalDateTime startDate, LocalDateTime endDate, @Nullable Integer kilometers) {
 
         checkUserCanRequestPublication(publication)
 
         //TODO: tal vez esta validacion es mejor que esté dentro del método "publication.addRequest" asi siempre queda adentro de publication
         if (publication.areDatesAvailable(startDate, endDate)) {
-            def newRequest = new Request(deliveryPlace: deliveryPlace, returnPlace: returnPlace, startDateTime: startDate, endDateTime: endDate, guest: this)
+            def newRequest = new Request(deliveryPlace: deliveryPlace, returnPlace: returnPlace, startDateTime: startDate, endDateTime: endDate, kilometers: kilometers, guest: this)
             publication.addRequest(newRequest)
             this.addToRequests(newRequest)
             newRequest
@@ -41,9 +43,11 @@ class Guest {
         publication.penalize(PenaltyReason.NotDeliverOnTime)
     }
 
-    void reportSuccessfulDeliver(Request request, Integer currentKilometers) {
+    void reportSuccessfulDelivery(Request request, @Nullable Integer kilometersDelivered) {
         this.checkOwnsRequest(request)
-        request.reportSuccessfulDeliver(currentKilometers)
+        if (!kilometersDelivered)
+            throw new DeliveryNotifiedWithoutKilometersException()
+        request.reportSuccessfulDeliver(kilometersDelivered)
     }
 
     def cancelRent(Request request) {

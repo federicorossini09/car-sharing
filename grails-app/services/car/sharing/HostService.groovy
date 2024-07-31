@@ -108,13 +108,12 @@ class HostService {
         }
     }
 
-    def notifyReturn(Long requestId) {
+    def notifyReturn(params) {
         def host = getLoggedHost()
         if (!host)
             throw new HostNotFoundException()
-        def request = requestService.getById(requestId)
-        //TODO: receive real kilometers
-        host.reportSuccessfulReturn(request, 10)
+        def request = requestService.getById(params.id)
+        host.reportSuccessfulReturn(request, params.kilometersReturned)
         request.save(failOnError: true)
     }
 

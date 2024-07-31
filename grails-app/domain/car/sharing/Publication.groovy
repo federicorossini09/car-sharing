@@ -85,4 +85,8 @@ class Publication {
     def isFeatured() {
         this.score.isFeatured()
     }
+
+    def checkKilometersDelivered(Integer kilometersDelivered) {
+        this.car.checkKilometersDelivered(kilometersDelivered)
+    }
 }

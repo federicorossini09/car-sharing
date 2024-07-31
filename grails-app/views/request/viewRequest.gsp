@@ -27,10 +27,11 @@
                 </g:if>
             </div>
         </div>
-        <h4 class="text-center">${car.brand} ${car.model} ${car.variant}</h4>
+
+        <h2 class="text-center text-muted">${car.brand} ${car.model} ${car.variant}</h2>
         <g:if test="${request.rent}">
             <div class="row mb-2">
-                <div class="col mx-auto">
+                <div class="col-sm-8 mx-auto">
                     <div class="card">
                         <div class="card-body">
                             <h3 class="card-title text-center text-muted">
@@ -50,19 +51,42 @@
                                     <span class="badge badge-danger">Cancelada</span>
                                 </g:if>
                             </h4>
+
+                            <div class="row mt-2">
+                                <div class="col border-right">
+                                    <div class="row mb-2">
+                                        <div class="col mr-2">
+                                            <div class="text-xs text-muted text-primary text-uppercase mb-1">
+                                                Kilometros Entregados</div>
+
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800">${rent.kilometersDelivered ? rent.kilometersDelivered + 'km' : '-'}</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col text-right">
+
+                                    <div class="row mb-2">
+                                        <div class="col mr-2">
+                                            <div class="text-xs text-muted text-primary text-uppercase mb-1">
+                                                Kilometros Devueltos</div>
+
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800">${rent.kilometersReturned ? rent.kilometersReturned + 'km' : '-'}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
                         <div class="card-footer">
                             <div class="row d-flex">
                                 <g:if test="${isGuestRequest}">
                                     <div class="col d-flex justify-content-center">
-                                        <g:form name="notifyDelivery" action="notifyDelivery"
-                                                controller="rent"
-                                                id="${request.rent.id}">
-                                            <g:submitButton class="btn btn-info float-left"
-                                                            name="Submit"
-                                                            value="Notificar Entrega"/>
-                                        </g:form>
+                                        <button type="button" class="btn btn-info"
+                                                data-toggle="modal"
+                                                data-target="#notifyModal">
+                                            Notificar Entrega
+                                        </button>
                                     </div>
 
                                     <div class="col d-flex justify-content-center">
@@ -78,13 +102,11 @@
                                 </g:if>
                                 <g:if test="${isHostPublication}">
                                     <div class="col d-flex justify-content-center">
-                                        <g:form name="notifyReturn" action="notifyReturn"
-                                                controller="rent"
-                                                id="${request.rent.id}">
-                                            <g:submitButton class="btn btn-info float-left"
-                                                            name="Submit"
-                                                            value="Notificar Devolución"/>
-                                        </g:form>
+                                        <button type="button" class="btn btn-info"
+                                                data-toggle="modal"
+                                                data-target="#notifyModal">
+                                            Notificar Devolución
+                                        </button>
                                     </div>
 
                                     <div class="col d-flex justify-content-center">
@@ -137,6 +159,19 @@
                                 <span class="badge badge-danger">Rechazada</span>
                             </g:if>
                         </h4>
+
+                        <div class="row mt-2">
+                            <div class="col">
+                                <div class="row mb-2">
+                                    <div class="col mr-2">
+                                        <div class="text-xs text-muted text-primary text-uppercase mb-1">
+                                            Kilometros a recorrer</div>
+
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800">${request.kilometers}km</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
                         <div class="row mt-2">
                             <div class="col border-right">
@@ -249,6 +284,69 @@
             Para ver una solicitud tenés que haberla hecho o ser el creador de la publicación
         </div>
     </g:else>
+</div>
+
+<div class="modal fade" id="notifyModal" tabindex="-1" aria-labelledby="notifyLabel"
+     aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"
+                    id="notifyLabel">Notificar ${isGuestRequest ? 'Entrega' : 'Devolución'}</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <g:if test="${isGuestRequest}">
+                <g:form name="notifyDelivery" action="notifyDelivery"
+                        controller="rent"
+                        id="${request?.rent?.id}">
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <div class="form-group">
+                                <label for="kilometersDelivered">¿Con cuántos kilometros te entregaron el auto?</label>
+                                <input type="number"
+                                       class="form-control"
+                                       id="kilometersDelivered"
+                                       name="kilometersDelivered"
+                                       placeholder="Ingresá la cantidad acá">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <g:submitButton class="btn btn-info float-left"
+                                        name="Submit"
+                                        value="Enviar"/>
+                    </div>
+                </g:form>
+            </g:if>
+            <g:else>
+                <g:form name="notifyReturn" action="notifyReturn"
+                        controller="rent"
+                        id="${request?.rent?.id}">
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <div class="form-group">
+                                <label for="kilometersReturned">¿Con cuántos kilometros te devolvieron el auto?</label>
+                                <input type="number"
+                                       class="form-control"
+                                       id="kilometersReturned"
+                                       name="kilometersReturned"
+                                       placeholder="Ingresá la cantidad acá">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <g:submitButton class="btn btn-info float-left"
+                                        name="Submit"
+                                        value="Enviar"/>
+                    </div>
+                </g:form>
+            </g:else>
+        </div>
+    </div>
 </div>
 
 </body>

@@ -1,16 +1,7 @@
 package car.sharing
 
-import car.sharing.exceptions.RentAlreadyActiveException
-import car.sharing.exceptions.RentAlreadyFinishedException
-import car.sharing.exceptions.RentCannotBeActivatedException
-import car.sharing.exceptions.RentCannotBeFinishedException
-import car.sharing.exceptions.RentIsNotActiveException
-import car.sharing.exceptions.RentNotReturnedNotAvailableException
-import car.sharing.exceptions.RentNotScheduledException
-import car.sharing.exceptions.RentUndeliverNotAvailableException
-import org.apache.tomcat.jni.Local
+import car.sharing.exceptions.*
 
-import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
 
@@ -87,22 +78,24 @@ class Rent {
         this.setStatus(RentStatus.CANCELED)
     }
 
-    boolean activate(Integer currentKilometers) {
+    def activate(Integer kilometersDelivered) {
         if (this.status == RentStatus.ACTIVE)
             throw new RentAlreadyActiveException()
         if (this.status != RentStatus.SCHEDULED)
             throw new RentCannotBeActivatedException()
-        this.setKilometersDelivered(currentKilometers)
+        this.setKilometersDelivered(kilometersDelivered)
         this.status = RentStatus.ACTIVE
     }
 
-    boolean finish(Integer kilometers) {
+    boolean finish(Integer kilometersReturned) {
         if (this.status == RentStatus.FINISHED)
             throw new RentAlreadyFinishedException()
         if (this.status != RentStatus.ACTIVE) {
             throw new RentCannotBeFinishedException()
         }
-        this.setKilometersReturned(kilometers)
+        if (kilometersReturned < this.kilometersDelivered)
+            throw new KilometersReturnedBelowDeliveredException()
+        this.setKilometersReturned(kilometersReturned)
         this.setStatus(RentStatus.FINISHED)
     }
 
