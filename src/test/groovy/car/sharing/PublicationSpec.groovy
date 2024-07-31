@@ -79,7 +79,7 @@ class PublicationSpec extends Specification implements DomainUnitTest<Publicatio
         def newPublicationIsValid = newPublication.validate()
         and: "a request is sent by a Guest"
         def guest = new Guest(user: user)
-        def request = new Request(publication: newPublication, deliveryPlace: "place1", returnPlace: "place2", startDateTime: LocalDateTime.parse("2024-01-01T00:00:00"), endDateTime: LocalDateTime.parse("2024-01-03T00:00:00"), guest: guest)
+        def request = new Request(publication: newPublication, deliveryPlace: "place1", returnPlace: "place2", startDateTime: LocalDateTime.parse("2024-09-01T00:00:00"), endDateTime: LocalDateTime.parse("2024-09-03T00:00:00"), guest: guest)
         and: "the request is accepted"
         newPublication.acceptRequest(request)
         then: "the request status is accepted"
@@ -114,12 +114,12 @@ class PublicationSpec extends Specification implements DomainUnitTest<Publicatio
         def newPublication = new Publication(host: host, car: car, price: price)
         and: "a request is sent by a Guest"
         def guest = new Guest(user: user)
-        def request = new Request(publication: newPublication, deliveryPlace: "place1", returnPlace: "place2", startDateTime: LocalDateTime.parse("2024-01-01T00:00:00"), endDateTime: LocalDateTime.parse("2024-01-03T00:00:00"), guest: guest)
+        def request = new Request(publication: newPublication, deliveryPlace: "place1", returnPlace: "place2", startDateTime: LocalDateTime.parse("2024-10-01T00:00:00"), endDateTime: LocalDateTime.parse("2024-10-03T00:00:00"), guest: guest)
         and: "the request is accepted"
         newPublication.acceptRequest(request)
         and: "i try to validate dates that collide with that accepted request"
-        def date1 = LocalDateTime.parse("2024-01-05T00:00:00")
-        def date2 = LocalDateTime.parse("2024-01-06T00:00:00")
+        def date1 = LocalDateTime.parse("2024-10-05T00:00:00")
+        def date2 = LocalDateTime.parse("2024-10-06T00:00:00")
         then: "the dates are valid"
         newPublication.areDatesAvailable(date1, date2)
     }

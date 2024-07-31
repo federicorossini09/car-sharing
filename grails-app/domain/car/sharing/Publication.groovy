@@ -33,7 +33,7 @@ class Publication {
     }
 
     def acceptRequest(Request requestToAccept) {
-        if (areDatesAvailable(requestToAccept.startDateTime, requestToAccept.endDateTime)) {
+        if (this.isNotInThePast(requestToAccept.startDateTime) && areDatesAvailable(requestToAccept.startDateTime, requestToAccept.endDateTime)) {
             requestToAccept.accept()
         } else {
             throw new PublicationNotAvailableException()
@@ -54,6 +54,11 @@ class Publication {
 
     List getRents() {
         this.requests.findAll { it.rent }.collect { it.rent }
+    }
+
+    boolean isNotInThePast(LocalDateTime requestedStartDate) {
+        LocalDateTime now = LocalDateTime.now()
+        return requestedStartDate.isAfter(now)
     }
 
     boolean areDatesAvailable(LocalDateTime startDate, LocalDateTime endDate) {
