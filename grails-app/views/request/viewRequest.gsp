@@ -53,6 +53,19 @@
                             </h4>
 
                             <div class="row mt-2">
+                                <div class="col">
+                                    <div class="row mb-2">
+                                        <div class="col mr-2">
+                                            <div class="text-xs text-muted text-primary text-uppercase mb-1">
+                                                Precio Total Final</div>
+
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800">u$s${rent.totalPrice.value}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row mt-2">
                                 <div class="col border-right">
                                     <div class="row mb-2">
                                         <div class="col mr-2">

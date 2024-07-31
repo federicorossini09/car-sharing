@@ -1,13 +1,8 @@
 package car.sharing
 
-import car.sharing.exceptions.RentIsNotActiveException
-import car.sharing.exceptions.RentNotExistsException
-import car.sharing.exceptions.RentNotReturnedNotAvailableException
-import car.sharing.exceptions.RentNotScheduledException
-import car.sharing.exceptions.RentUndeliverNotAvailableException
-import org.springframework.security.access.method.P
 import car.sharing.exceptions.GuestCannotBeReviewedYet
 import car.sharing.exceptions.PublicationCannotBeReviewedYet
+import car.sharing.exceptions.RentNotExistsException
 
 import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
@@ -26,7 +21,8 @@ class Request {
 
     def accept() {
         this.setStatus(RequestStatus.ACCEPTED)
-        this.rent = new Rent()
+        def totalPrice = new TotalPrice(this.calculateDays(), publication.pricePerDay(), this.kilometers, this.guest.isFeatured())
+        this.rent = new Rent(totalPrice: totalPrice)
     }
 
     def reject() {
@@ -117,5 +113,9 @@ class Request {
             throw new GuestCannotBeReviewedYet()
         }
         this.guest.receiveReview(review)
+    }
+
+    def calculateDays() {
+        ChronoUnit.DAYS.between(this.startDateTime, this.endDateTime).toInteger()
     }
 }
