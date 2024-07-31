@@ -59,7 +59,7 @@
                                             <div class="text-xs text-muted text-primary text-uppercase mb-1">
                                                 Kilometros Entregados</div>
 
-                                            <div class="h5 mb-0 font-weight-bold text-gray-800">${request.rent.kilometersDelivered + 'km' ?: '-'}</div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800">${rent.kilometersDelivered ? rent.kilometersDelivered + 'km' : '-'}</div>
                                         </div>
                                     </div>
                                 </div>
@@ -71,7 +71,7 @@
                                             <div class="text-xs text-muted text-primary text-uppercase mb-1">
                                                 Kilometros Devueltos</div>
 
-                                            <div class="h5 mb-0 font-weight-bold text-gray-800">${request.rent.kilometersReturned + 'km' ?: '-'}</div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800">${rent.kilometersReturned ? rent.kilometersReturned + 'km' : '-'}</div>
                                         </div>
                                     </div>
                                 </div>
@@ -102,7 +102,7 @@
                                 </g:if>
                                 <g:if test="${isHostPublication}">
                                     <div class="col d-flex justify-content-center">
-                                        <button type="button" class="btn btn-primary"
+                                        <button type="button" class="btn btn-info"
                                                 data-toggle="modal"
                                                 data-target="#notifyModal">
                                             Notificar Devolución
@@ -159,6 +159,19 @@
                                 <span class="badge badge-danger">Rechazada</span>
                             </g:if>
                         </h4>
+
+                        <div class="row mt-2">
+                            <div class="col">
+                                <div class="row mb-2">
+                                    <div class="col mr-2">
+                                        <div class="text-xs text-muted text-primary text-uppercase mb-1">
+                                            Kilometros a recorrer</div>
+
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800">${request.kilometers}km</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
                         <div class="row mt-2">
                             <div class="col border-right">

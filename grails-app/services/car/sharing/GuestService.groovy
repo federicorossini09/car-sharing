@@ -20,7 +20,9 @@ class GuestService {
         def publication = publicationService.getById(publicationId)
         def guest = getLoggedGuest()
 
-        def request = guest.addRequest(publication, params).save(failOnError: true)
+        def request = guest.addRequest(publication,
+                params.deliveryPlace, params.returnPlace, params.startDateTime, params.endDateTime,
+                params.kilometers).save(failOnError: true)
 
         publication.save(failOnError: true)
 

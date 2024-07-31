@@ -6,6 +6,8 @@ import car.sharing.exceptions.HostCannotRequestHisPublication
 import car.sharing.exceptions.ReviewAlreadySent
 import org.springframework.lang.Nullable
 
+import java.time.LocalDateTime
+
 class Guest {
 
     User user
@@ -15,13 +17,13 @@ class Guest {
     static constraints = {
     }
 
-    def addRequest(Publication publication, Map requestParams = [:]) {
+    def addRequest(Publication publication, String deliveryPlace, String returnPlace, LocalDateTime startDate, LocalDateTime endDate, @Nullable Integer kilometers) {
 
         checkUserCanRequestPublication(publication)
 
         //TODO: tal vez esta validacion es mejor que esté dentro del método "publication.addRequest" asi siempre queda adentro de publication
-        if (publication.areDatesAvailable(requestParams.startDate, requestParams.endDate)) {
-            def newRequest = new Request(requestParams)
+        if (publication.areDatesAvailable(startDate, endDate)) {
+            def newRequest = new Request(deliveryPlace: deliveryPlace, returnPlace: returnPlace, startDateTime: startDate, endDateTime: endDate, kilometers: kilometers, guest: this)
             publication.addRequest(newRequest)
             this.addToRequests(newRequest)
             newRequest

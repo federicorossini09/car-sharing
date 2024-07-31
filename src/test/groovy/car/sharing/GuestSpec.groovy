@@ -1,6 +1,8 @@
 package car.sharing
 
+import car.sharing.exceptions.DeliveryNotifiedWithoutKilometersException
 import car.sharing.exceptions.HostCannotRequestHisPublication
+import car.sharing.exceptions.KilometersDeliveredBelowPublishedException
 import car.sharing.exceptions.ReviewAlreadySent
 import grails.testing.gorm.DomainUnitTest
 import spock.lang.Shared
@@ -49,7 +51,7 @@ class GuestSpec extends Specification implements DomainUnitTest<Guest> {
         def newPublication = new Publication(host: host, car: car)
         and: "a request is sent by a Guest"
         def guest = new Guest(user: user2)
-        guest.addRequest(newPublication, "place1", "place2", LocalDateTime.parse("2024-01-01T00:00:00"), LocalDateTime.parse("2024-01-03T00:00:00"))
+        guest.addRequest(newPublication, "place1", "place2", LocalDateTime.parse("2024-01-01T00:00:00"), LocalDateTime.parse("2024-01-03T00:00:00"), 500)
         then: "publication requests size is 1"
         newPublication.lengthOfRequests() == 1
     }
@@ -60,7 +62,7 @@ class GuestSpec extends Specification implements DomainUnitTest<Guest> {
         def newPublication = new Publication(host: host, car: car)
         and: "a request is sent by a Guest"
         def guest = new Guest(user: user1)
-        guest.addRequest(newPublication, "place1", "place2", LocalDateTime.parse("2024-01-01T00:00:00"), LocalDateTime.parse("2024-01-03T00:00:00"))
+        guest.addRequest(newPublication, "place1", "place2", LocalDateTime.parse("2024-01-01T00:00:00"), LocalDateTime.parse("2024-01-03T00:00:00"), 500)
         then: "publication requests size is 1"
         thrown HostCannotRequestHisPublication
     }
@@ -78,7 +80,7 @@ class GuestSpec extends Specification implements DomainUnitTest<Guest> {
         def guest = new Guest(user: user2)
         def startDate = LocalDateTime.parse("2024-01-01T00:00:00")
         def returnDate = LocalDateTime.parse("2024-01-03T00:00:00")
-        guest.addRequest(newPublication, "place1", "place2", startDate, returnDate)
+        guest.addRequest(newPublication, "place1", "place2", startDate, returnDate, 500)
         and: "its accepted"
         def request = guest.requests[0]
         request.accept()
@@ -98,14 +100,50 @@ class GuestSpec extends Specification implements DomainUnitTest<Guest> {
         def guest = new Guest(user: user2)
         def startDate = LocalDateTime.parse("2024-01-01T00:00:00")
         def returnDate = LocalDateTime.parse("2024-01-03T00:00:00")
-        guest.addRequest(newPublication, "place1", "place2", startDate, returnDate)
+        guest.addRequest(newPublication, "place1", "place2", startDate, returnDate, 500)
         and: "its accepted"
         def request = guest.requests[0]
         request.accept()
-        and: "the guest reports it as undelivered"
+        and: "the guest reports the delivery"
         guest.reportSuccessfulDelivery(request, 55000)
         then: "the rent is active"
         request.rent.isActive()
+    }
+
+    void "cannot report delivery with less kilometers than published"() {
+        given: "a publication with a car with 50000km"
+        when: "a publication is created"
+        def newPublication = new Publication(host: host, car: car)
+        and: "a request is sent by a Guest "
+        def guest = new Guest(user: user2)
+        def startDate = LocalDateTime.parse("2024-01-01T00:00:00")
+        def returnDate = LocalDateTime.parse("2024-01-03T00:00:00")
+        guest.addRequest(newPublication, "place1", "place2", startDate, returnDate, 500)
+        and: "its accepted"
+        def request = guest.requests[0]
+        request.accept()
+        and: "the guest reports the delivery with 45000km"
+        guest.reportSuccessfulDelivery(request, 45000)
+        then: "a kilometers delivered below published exception is thrown"
+        thrown KilometersDeliveredBelowPublishedException
+    }
+
+    void "cannot report delivery without kilometers returned"() {
+        given: "a publication with a car with 50000km"
+        when: "a publication is created"
+        def newPublication = new Publication(host: host, car: car)
+        and: "a request is sent by a Guest "
+        def guest = new Guest(user: user2)
+        def startDate = LocalDateTime.parse("2024-01-01T00:00:00")
+        def returnDate = LocalDateTime.parse("2024-01-03T00:00:00")
+        guest.addRequest(newPublication, "place1", "place2", startDate, returnDate, 500)
+        and: "its accepted"
+        def request = guest.requests[0]
+        request.accept()
+        and: "the guest reports the delivery without kilometers"
+        guest.reportSuccessfulDelivery(request, null)
+        then: "a delivery notified without kilometers exception is thrown"
+        thrown DeliveryNotifiedWithoutKilometersException
     }
 
     void "review publication"() {
@@ -113,11 +151,11 @@ class GuestSpec extends Specification implements DomainUnitTest<Guest> {
         def newPublication = new Publication(host: host, car: car)
         def startDate = LocalDateTime.parse("2024-01-01T00:00:00")
         def returnDate = LocalDateTime.parse("2024-01-03T00:00:00")
-        def request = guest.addRequest(newPublication, "place1", "place2", startDate, returnDate)
+        def request = guest.addRequest(newPublication, "place1", "place2", startDate, returnDate, 500)
         request.setId(1)
         request.accept()
-        request.reportSuccessfulDeliver(10)
-        request.reportSuccessfulReturn(20)
+        request.reportSuccessfulDeliver(50000)
+        request.reportSuccessfulReturn(50500)
         when: "when the guest reviews the publication"
         def review = new Review(score: 3, text: 'something', request: request)
         guest.reviewPublication(request, review)
@@ -130,11 +168,11 @@ class GuestSpec extends Specification implements DomainUnitTest<Guest> {
         def newPublication = new Publication(host: host, car: car)
         def startDate = LocalDateTime.parse("2024-01-01T00:00:00")
         def returnDate = LocalDateTime.parse("2024-01-03T00:00:00")
-        def request = guest.addRequest(newPublication, "place1", "place2", startDate, returnDate)
+        def request = guest.addRequest(newPublication, "place1", "place2", startDate, returnDate, 500)
         request.setId(1)
         request.accept()
-        request.reportSuccessfulDeliver(10)
-        request.reportSuccessfulReturn(20)
+        request.reportSuccessfulDeliver(50000)
+        request.reportSuccessfulReturn(50500)
         guest.reviewPublication(request, new Review(score: 3, text: 'something', request: request))
         when: "he tries to review the publication a second time"
         guest.reviewPublication(request, new Review(score: 4, text: 'another thing', request: request))
