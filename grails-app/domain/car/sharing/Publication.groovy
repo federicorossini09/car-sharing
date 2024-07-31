@@ -89,4 +89,8 @@ class Publication {
     def checkKilometersDelivered(Integer kilometersDelivered) {
         this.car.checkKilometersDelivered(kilometersDelivered)
     }
+
+    def pricePerDay() {
+        this.price.finalValue
+    }
 }

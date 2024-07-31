@@ -15,11 +15,12 @@ import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
 
 class Rent {
-    RentStatus status = RentStatus.SCHEDULED
 
+    RentStatus status = RentStatus.SCHEDULED
     Integer kilometersDelivered
     Integer kilometersReturned
     CancellationReason cancellationReason
+    TotalPrice totalPrice
 
 
     static constraints = {

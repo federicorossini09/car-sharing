@@ -2,13 +2,18 @@ package car.sharing
 
 import car.sharing.exceptions.RentTooLateToCancelException
 import grails.testing.gorm.DomainUnitTest
+import spock.lang.Shared
 import spock.lang.Specification
 
 import java.time.LocalDateTime
 
 class RentSpec extends Specification implements DomainUnitTest<Rent> {
 
+    @Shared
+    TotalPrice totalPrice
+
     def setup() {
+        totalPrice = new TotalPrice(5, 100, 50, false)
     }
 
     def cleanup() {
@@ -16,7 +21,7 @@ class RentSpec extends Specification implements DomainUnitTest<Rent> {
 
     void "validate a rent is scheduled or active"() {
         given: "an existing rent"
-        def rent = new Rent()
+        def rent = new Rent(totalPrice: totalPrice)
         when: "i ask uf its scheduled or active"
         def isScheduledOrActive = rent.isScheduledOrActive()
         then: "the dates are not valid"
@@ -26,7 +31,7 @@ class RentSpec extends Specification implements DomainUnitTest<Rent> {
 
     void "cancel a rent that is scheduled or active"() {
         given: "an existing rent"
-        def rent = new Rent()
+        def rent = new Rent(totalPrice: totalPrice)
         when: "i cancel it"
         rent.cancel()
         rent.isScheduledOrActive()
@@ -36,7 +41,7 @@ class RentSpec extends Specification implements DomainUnitTest<Rent> {
 
     void "activate a rent "() {
         given: "an existing rent"
-        def rent = new Rent()
+        def rent = new Rent(totalPrice: totalPrice)
         when: "activate"
         rent.activate()
         then: "its active"
@@ -45,7 +50,7 @@ class RentSpec extends Specification implements DomainUnitTest<Rent> {
 
     void "report undelivered"() {
         given: "an existing accepted rent"
-        def rent = new Rent()
+        def rent = new Rent(totalPrice: totalPrice)
         rent.status = RentStatus.SCHEDULED
         def startDate = LocalDateTime.parse("2024-01-01T00:00:00")
         when: "i report undelivered"
@@ -58,7 +63,7 @@ class RentSpec extends Specification implements DomainUnitTest<Rent> {
 
     void "report not returned"() {
         given: "an existing active rent"
-        def rent = new Rent()
+        def rent = new Rent(totalPrice: totalPrice)
         rent.status = RentStatus.ACTIVE
         when: "i report not returned"
         def returnDate = LocalDateTime.parse("2024-01-03T00:00:00")
@@ -71,7 +76,7 @@ class RentSpec extends Specification implements DomainUnitTest<Rent> {
 
     void "cancel from host"() {
         given: "an existing accepted rent"
-        def rent = new Rent()
+        def rent = new Rent(totalPrice: totalPrice)
         rent.status = RentStatus.SCHEDULED
         when: "the host cancels it"
         rent.cancelFromHost()
@@ -83,7 +88,7 @@ class RentSpec extends Specification implements DomainUnitTest<Rent> {
 
     void "cancel from guest in a forbidden date"() {
         given: "an existing active rent"
-        def rent = new Rent()
+        def rent = new Rent(totalPrice: totalPrice)
         rent.status = RentStatus.ACTIVE
         when: "the guest tries to cancel it after the permitted date"
         def startDate = LocalDateTime.parse("2024-01-01T00:00:00")
@@ -94,7 +99,7 @@ class RentSpec extends Specification implements DomainUnitTest<Rent> {
 
     void "cancel from guest in an allowed date"() {
         given: "an existing active rent"
-        def rent = new Rent()
+        def rent = new Rent(totalPrice: totalPrice)
         rent.status = RentStatus.ACTIVE
         when: "the guest tries to cancel it in an allowed date"
         def startDate = LocalDateTime.parse("2027-01-01T00:00:00")

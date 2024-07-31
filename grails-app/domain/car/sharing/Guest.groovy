@@ -86,4 +86,8 @@ class Guest {
     def penalize(PenaltyReason reason) {
         this.score.penalize(reason)
     }
+
+    def isFeatured() {
+        this.score.isFeatured()
+    }
 }
