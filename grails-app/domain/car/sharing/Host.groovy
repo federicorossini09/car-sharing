@@ -66,7 +66,6 @@ class Host {
     void reportNotReturned(Request request, Publication publication) {
         this.checkHostsPublication(publication)
         request.reportNotReturned()
-        //todo guest.penalize()
     }
 
     void reportSuccessfulReturn(Request request, @Nullable Integer kilometersReturned) {

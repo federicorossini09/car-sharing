@@ -73,6 +73,7 @@ class Request {
         if (!this.rent) {
             throw new RentNotExistsException();
         }
+        guest.penalize(PenaltyReason.NotReturnOnTime)
         rent.reportNotReturned(this.endDateTime)
     }
 
