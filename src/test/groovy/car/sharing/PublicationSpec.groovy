@@ -1,6 +1,7 @@
 package car.sharing
 
 import car.sharing.exceptions.PublicationNotAvailableException
+import car.sharing.exceptions.RentCannotBeActivatedException
 import grails.testing.gorm.DomainUnitTest
 import spock.lang.Shared
 import spock.lang.Specification
@@ -189,5 +190,27 @@ class PublicationSpec extends Specification implements DomainUnitTest<Publicatio
         newPublication.receiveReview(review2)
         then: "it remains not featured"
         !newPublication.isFeatured()
+    }
+
+    void "cant activate rent if there is another active rent"() {
+        given: "an existing car"
+        when: "a publication is created"
+        def newPublication = new Publication(host: host, car: car, price: price)
+        def newPublicationIsValid = newPublication.validate()
+        and: "two request are sent by a Guest"
+        def guest = new Guest(user: user)
+        def request1 = new Request(publication: newPublication, deliveryPlace: "place1", returnPlace: "place2", startDateTime: LocalDateTime.parse("2024-09-01T00:00:00"), endDateTime: LocalDateTime.parse("2024-09-03T00:00:00"), guest: guest)
+        def request2 = new Request(publication: newPublication, deliveryPlace: "place1", returnPlace: "place2", startDateTime: LocalDateTime.parse("2024-09-04T00:00:00"), endDateTime: LocalDateTime.parse("2024-09-08T00:00:00"), guest: guest)
+        newPublication.addRequest(request1)
+        newPublication.addRequest(request1)
+        and: "the requests are accepted"
+        newPublication.acceptRequest(request1)
+        newPublication.acceptRequest(request2)
+        and: "both are reported delivered"
+        request1.reportSuccessfulDeliver(20000)
+        request2.reportSuccessfulDeliver(21000)
+        then: "cant activate rent if there is another active rent"
+        thrown RentCannotBeActivatedException
+
     }
 }

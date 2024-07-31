@@ -98,4 +98,8 @@ class Publication {
     def pricePerDay() {
         this.price.finalValue
     }
+
+    def thereIsAnyActiveRent() {
+        return (requests.any { request -> request.rentIsActive() })
+    }
 }
