@@ -115,4 +115,32 @@ class PriceSpec extends Specification implements DomainUnitTest<Price> {
         then: "the price is invalid"
         !priceIsValid && price.errors.getFieldError().getField() == "finalValue"
     }
+
+    void "price update does not change any value"() {
+        given: "an existing price with min value 75 and max value 125 and final value 100"
+        def price = new Price(currentYear, 10000)
+        when: "it is updated with 15000 km"
+        price.update(currentYear, 15000)
+        then: "its values do not change"
+        price.finalValue == 100 && price.minimumValue == 75 && price.maximumValue == 125
+    }
+
+    void "price update changes max & min values"() {
+        given: "an existing price with min value 75 and max value 125 and final value 100"
+        def price = new Price(currentYear, 10000)
+        when: "it is updated with 26000 km"
+        price.update(currentYear, 26000)
+        then: "its max & min values change but final value does not"
+        price.finalValue == 100 && price.minimumValue != 75 && price.maximumValue != 125
+    }
+
+    void "price update changes final value"() {
+        given: "an existing price with min value 75 and max value 125 and final value 100"
+        def price = new Price(currentYear, 10000)
+        price.setFinalValue(125)
+        when: "it is updated with 26000 km"
+        price.update(currentYear, 26000)
+        then: "its final value changes to new max value"
+        price.finalValue == price.maximumValue
+    }
 }

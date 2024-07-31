@@ -1,5 +1,5 @@
 package car.sharing
 
 enum PenaltyReason {
-    NotDeliverOnTime, NotReturnOnTime, RentCancellation
+    NotDeliverOnTime, NotReturnOnTime, KilometersRequestedExceeded
 }

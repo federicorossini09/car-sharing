@@ -14,8 +14,8 @@ class Score {
     static final BigDecimal MIN_FEATURED_VALUE = BigDecimal.valueOf(4.5)
 
     def penalize(PenaltyReason reason) {
-        def penalty = new Penalty(reason)
-        penalties << penalty
+        def penalty = new Penalty(reason: reason)
+        this.penalties.add(penalty)
         this.calculate()
     }
 

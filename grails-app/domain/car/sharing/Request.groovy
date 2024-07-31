@@ -74,12 +74,13 @@ class Request {
     }
 
     def reportSuccessfulReturn(Integer kilometersReturned) {
-        //todo penalizar al guest si aca nos pasamos
         if (!this.rent) {
             throw new RentNotExistsException();
         }
         rent.finish(kilometersReturned)
-        //todo publication actualizar precio
+        if (rent.getKilometersDriven() > this.kilometers)
+            guest.penalize(PenaltyReason.KilometersRequestedExceeded)
+        publication.updateCar(kilometersReturned)
     }
 
     def isFinished() {

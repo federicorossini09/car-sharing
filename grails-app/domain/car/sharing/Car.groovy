@@ -1,6 +1,7 @@
 package car.sharing
 
 import car.sharing.exceptions.KilometersDeliveredBelowPublishedException
+import car.sharing.exceptions.NewKilometersCannotBeLessThanCurrent
 
 import java.time.LocalDate
 
@@ -29,5 +30,11 @@ class Car {
     def checkKilometersDelivered(Integer kilometersDelivered) {
         if (kilometersDelivered < this.kilometers)
             throw new KilometersDeliveredBelowPublishedException()
+    }
+
+    def updateKilometers(Integer kilometers) {
+        if (kilometers < this.kilometers)
+            throw new NewKilometersCannotBeLessThanCurrent()
+        this.setKilometers(kilometers)
     }
 }
