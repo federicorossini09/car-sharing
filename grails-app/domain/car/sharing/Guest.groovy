@@ -82,4 +82,8 @@ class Guest {
     def isReviewAlreadySent(Request request) {
         reviewsSent.any { it.sentForRequest(request) }
     }
+
+    def penalize(PenaltyReason reason) {
+        this.score.penalize(reason)
+    }
 }

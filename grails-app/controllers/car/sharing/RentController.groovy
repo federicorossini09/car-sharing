@@ -58,6 +58,28 @@ class RentController {
         redirect(controller: 'request', action: 'viewRequest', params: [requestId: params.id])
     }
 
+    def cancelFromGuest(params) {
+        try {
+            guestService.cancelFromGuest(Long.valueOf(params.id))
+            flash.successMessage = 'Renta cancelada'
+        } catch (RentTooLateToCancelException ignored) {
+            flash.errorMessage = 'Ya no se puede cancelar la renta'
+        } finally {
+            redirect(controller: 'request', action: 'viewRequest', params: [requestId: params.id])
+        }
+    }
+
+    def cancelFromHost(params) {
+        try {
+            hostService.cancelFromHost(Long.valueOf(params.id))
+            flash.successMessage = 'Renta cancelada'
+        } catch (RentNotScheduledException ignored) {
+            flash.errorMessage = 'Solo podés cancelar la renta cuando se encuentra programada'
+        } finally {
+            redirect(controller: 'request', action: 'viewRequest', params: [requestId: params.id])
+        }
+    }
+
     def parseNotifyDeliveryParams(params) {
         params.id = Long.valueOf(params.id)
         params.kilometersDelivered = params.kilometersDelivered ? Integer.valueOf(params.kilometersDelivered) : null

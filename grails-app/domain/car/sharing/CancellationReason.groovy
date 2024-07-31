@@ -1,5 +1,5 @@
 package car.sharing
 
 enum CancellationReason {
-    NotDelivered, NotReturned, Other
+    NotDelivered, NotReturned, CanceledByHost, CanceledByGuest
 }

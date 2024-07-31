@@ -78,8 +78,8 @@ class HostService {
 
         host.acceptPublicationRequest(publication, request)
 
-        request.save()
-        publication.save()
+        request.save(failOnError: true)
+        publication.save(failOnError: true)
     }
 
     def rejectPublicationRequest(Long requestId) {
@@ -139,5 +139,13 @@ class HostService {
 
         host.reviewGuest(request, review)
         request.save(failOnError: true)
+    }
+
+    def cancelFromHost(Long requestId) {
+        def host = getLoggedHost()
+        if (!host)
+            throw new HostNotFoundException()
+        def request = requestService.getById(requestId)
+        host.cancelRent(request)
     }
 }

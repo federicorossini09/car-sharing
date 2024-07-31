@@ -1,5 +1,6 @@
 package car.sharing
 
+import car.sharing.exceptions.RentTooLateToCancelException
 import grails.testing.gorm.DomainUnitTest
 import spock.lang.Specification
 
@@ -76,8 +77,8 @@ class RentSpec extends Specification implements DomainUnitTest<Rent> {
         rent.cancelFromHost()
         then: "its cancelled"
         rent.isCanceled()
-        and: "the reason is other"
-        rent.cancellationReason == CancellationReason.Other
+        and: "the reason is canceled by host"
+        rent.cancellationReason == CancellationReason.CanceledByHost
     }
 
     void "cancel from guest in a forbidden date"() {
@@ -87,10 +88,8 @@ class RentSpec extends Specification implements DomainUnitTest<Rent> {
         when: "the guest tries to cancel it after the permitted date"
         def startDate = LocalDateTime.parse("2024-01-01T00:00:00")
         rent.cancelFromGuest(startDate)
-        then: "its not cancelled"
-        rent.isCanceled() == false
-        and: "there is no reason"
-        rent.cancellationReason == null
+        then: "an error is thrown"
+        thrown RentTooLateToCancelException
     }
 
     void "cancel from guest in an allowed date"() {
@@ -102,8 +101,8 @@ class RentSpec extends Specification implements DomainUnitTest<Rent> {
         rent.cancelFromGuest(startDate)
         then: "its  cancelled"
         rent.isCanceled() == true
-        and: "the reason is other"
-        rent.cancellationReason == CancellationReason.Other
+        and: "the reason is canceled by guest"
+        rent.cancellationReason == CancellationReason.CanceledByGuest
     }
 }
 
