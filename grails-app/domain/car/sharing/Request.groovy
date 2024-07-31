@@ -79,7 +79,7 @@ class Request {
             throw new RentNotExistsException();
         }
         rent.finish(kilometersReturned)
-        //todo publication actualizar precio
+        publication.updateCar(kilometersReturned)
     }
 
     def isFinished() {

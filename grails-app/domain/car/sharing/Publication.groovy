@@ -93,4 +93,9 @@ class Publication {
     def pricePerDay() {
         this.price.finalValue
     }
+
+    def updateCar(Integer kilometers) {
+        this.car.updateKilometers(kilometers)
+        this.price.update(this.car.year, kilometers)
+    }
 }
