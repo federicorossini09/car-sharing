@@ -3,26 +3,23 @@ package car.sharing
 class Penalty {
 
     PenaltyReason reason
-    BigDecimal value
 
+    static constraints = {
+    }
 
-    Penalty(PenaltyReason reason) {
-        switch(reason) {
+    def apply(BigDecimal score) {
+        def value;
+        switch (reason) {
             case PenaltyReason.NotDeliverOnTime:
                 value = 0.9
                 break
             case PenaltyReason.NotReturnOnTime:
                 value = 0.9
                 break
-            case PenaltyReason.RentCancellation:
-                value = 0.8
+            case PenaltyReason.KilometersRequestedExceeded:
+                value = 0.99
                 break
         }
-    }
-    static constraints = {
-    }
-
-    def apply(BigDecimal score) {
-        score*value
+        score * value
     }
 }

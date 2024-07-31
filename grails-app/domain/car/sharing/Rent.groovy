@@ -1,15 +1,6 @@
 package car.sharing
 
-import car.sharing.exceptions.RentAlreadyActiveException
-import car.sharing.exceptions.RentAlreadyFinishedException
-import car.sharing.exceptions.RentCannotBeActivatedException
-import car.sharing.exceptions.RentCannotBeFinishedException
-import car.sharing.exceptions.RentIsNotActiveException
-import car.sharing.exceptions.RentNotReturnedNotAvailableException
-import car.sharing.exceptions.RentNotScheduledException
-import car.sharing.exceptions.RentTooLateToCancelException
-import car.sharing.exceptions.RentUndeliverNotAvailableException
-import car.sharing.exceptions.KilometersReturnedBelowDeliveredException
+import car.sharing.exceptions.*
 
 import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
@@ -130,5 +121,9 @@ class Rent {
     def isScheduled() {
         return this.status == RentStatus.SCHEDULED
 
+    }
+
+    def getKilometersDriven() {
+        kilometersReturned - kilometersDelivered
     }
 }

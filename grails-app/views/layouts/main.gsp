@@ -39,9 +39,13 @@
         </ul>
         <span class="navbar-text" href="#">
             <g:set var="userService" bean="userService"/>
+            <g:set var="guestService" bean="guestService"/>
             <g:set var="username" value="${userService.getLoggedUsername()}"/>
+            <g:set var="score" value="${guestService.getLoggedGuest()?.score?.value}"/>
             <g:if test="${userService.getLoggedUsername() != null}">
-                Hola, ${username}
+                Hola, <span class="font-weight-bold">${username}</span>
+
+                <p>${score ? ('Score de Huésped: ' + score + '★') : ''}</p>
                 <g:form controller="logout">
                     <g:submitButton class="btn btn-outline-info" name="Submit"
                                     value="Cerrar sesión"/>
