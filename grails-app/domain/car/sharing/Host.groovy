@@ -86,4 +86,8 @@ class Host {
     def isReviewAlreadySent(Request request) {
         reviewsSent.any { it.sentForRequest(request) }
     }
+
+    def cancelRent(Request request) {
+        request.cancelFromHost()
+    }
 }

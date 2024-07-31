@@ -1,9 +1,16 @@
 package car.sharing
 
+import car.sharing.exceptions.RentIsNotActiveException
+import car.sharing.exceptions.RentNotExistsException
+import car.sharing.exceptions.RentNotReturnedNotAvailableException
+import car.sharing.exceptions.RentNotScheduledException
+import car.sharing.exceptions.RentUndeliverNotAvailableException
+import org.springframework.security.access.method.P
 import car.sharing.exceptions.GuestCannotBeReviewedYet
 import car.sharing.exceptions.PublicationCannotBeReviewedYet
 
 import java.time.LocalDateTime
+import java.time.temporal.ChronoUnit
 
 class Request {
 
@@ -14,6 +21,7 @@ class Request {
     static belongsTo = [guest: Guest, publication: Publication]
     Rent rent
     RequestStatus status = RequestStatus.WAITING
+
 
     def accept() {
         this.setStatus(RequestStatus.ACCEPTED)
@@ -46,44 +54,53 @@ class Request {
     }
 
     void reportUndelivered() {
-        /*
-        if (this.isNotScheduled()) {
-            //todo throw error porque tiene que estar programada
-        } else if (this.couldReportUndeliver()) {
-            //todo throw error porque tiene que esperar cierto tiempo
+        if (!this.rent) {
+            throw new RentNotExistsException();
         }
-        //todo chequear que este en estado cancelable
-
-         */
-        rent.cancel()
-
-
+        rent.reportUndelivered(this.startDateTime)
     }
 
     def reportSuccessfulDeliver(Integer currentKilometers) {
+        if (!this.rent) {
+            throw new RentNotExistsException();
+        }
         rent.activate(currentKilometers)
     }
 
     def reportNotReturned() {
-        /*if (this.isNotActive()) {
-            //todo throw error porque tiene que estar activa
-        } else if (this.couldReportNotReturned()) {
-            //todo throw error porque tiene que
-        } else if (!rent.isActive()) {
-            //todo validar qeu este activa
-        }*/
-        rent.cancel()
+        if (!this.rent) {
+            throw new RentNotExistsException();
+        }
+        rent.reportNotReturned(this.endDateTime)
     }
 
     def reportSuccessfulReturn(Integer kilometers) {
         //todo penalizar al guest si aca nos pasamos
+        if (!this.rent) {
+            throw new RentNotExistsException();
+        }
         rent.finish(kilometers)
         //todo publication actualizar precio
     }
 
     def isFinished() {
-        this.rent.isFinished()
+        this.rent && this.rent.isFinished()
     }
+
+    def cancelFromHost() {
+        if (!this.rent) {
+            throw new RentNotExistsException();
+        }
+        this.rent.cancelFromHost()
+    }
+
+    def cancelFromGuest() {
+        if (!this.rent) {
+            throw new RentNotExistsException();
+        }
+        this.rent.cancelFromGuest(this.startDateTime)
+    }
+
 
     def sendPublicationReview(Review review) {
         if (!this.rent.isFinished()) {
