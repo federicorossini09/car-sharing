@@ -1,5 +1,6 @@
 package car.sharing
 
+import car.sharing.exceptions.KilometersDeliveredBelowPublishedException
 
 import java.time.LocalDate
 
@@ -25,4 +26,8 @@ class Car {
         year blank: false, validator: { if (it < 1980) 'tooOld' }
     }
 
+    def checkKilometersDelivered(Integer kilometersDelivered) {
+        if (kilometersDelivered < this.kilometers)
+            throw new KilometersDeliveredBelowPublishedException()
+    }
 }

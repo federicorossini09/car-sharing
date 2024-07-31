@@ -130,7 +130,7 @@ class HostSpec extends Specification implements DomainUnitTest<Host> {
         guest2.addToRequests(request1)
         publication1.addRequest(request1)
         request1.accept()
-        guest2.reportSuccessfulDeliver(request1, 10)
+        guest2.reportSuccessfulDelivery(request1, 10)
         host.reportSuccessfulReturn(request1, 20)
         when: "he reviews the guest"
         host.reviewGuest(request1, new Review(score: 3, text: 'something', request: request1))
@@ -145,7 +145,7 @@ class HostSpec extends Specification implements DomainUnitTest<Host> {
         guest2.addToRequests(request1)
         publication1.addRequest(request1)
         request1.accept()
-        guest2.reportSuccessfulDeliver(request1, 10)
+        guest2.reportSuccessfulDelivery(request1, 10)
         host.reportSuccessfulReturn(request1, 20)
         host.reviewGuest(request1, new Review(score: 3, text: 'something', request: request1))
         when: "he tries to review the guest a second time"

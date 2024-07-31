@@ -82,6 +82,7 @@ class RequestController {
     def parseRequestParams(params) {
         params.startDateTime = params.startDateTime ? LocalDateTime.parse(params.startDateTime) : null
         params.endDateTime = params.endDateTime ? LocalDateTime.parse(params.endDateTime) : null
+        params.kilometers = params.kilometers ? Integer.valueOf(params.kilometers) : null
         params
     }
 }

@@ -27,6 +27,27 @@
                     <g:form name="createRequest" action="createRequest">
                         <g:hiddenField name="publicationId" value="${publication.id}"/>
                         <div class="row">
+                            <div class="col">
+                                <div class="form-group">
+                                    <g:set var="kilometersError"
+                                           value="${errors?.getFieldError("kilometers")}"/>
+                                    <label for="kilometers">¿Cuántos kilometros vas a utilizar el auto?</label>
+                                    <input type="number"
+                                           class="form-control ${kilometersError ? 'is-invalid' : ''}"
+                                           id="kilometers"
+                                           name="kilometers"
+                                           value="${values?.kilometers}"
+                                           placeholder="Ingresá la cantidad acá">
+                                    <g:if test="${kilometersError}">
+                                        <div class="invalid-feedback">
+                                            ${errorMessageHelper.getMessage(kilometersError)}
+                                        </div>
+                                    </g:if>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
                             <div class="col border-right">
                                 <h5>Entrega</h5>
 

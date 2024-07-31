@@ -21,6 +21,7 @@ class Request {
     static belongsTo = [guest: Guest, publication: Publication]
     Rent rent
     RequestStatus status = RequestStatus.WAITING
+    Integer kilometers
 
 
     def accept() {
@@ -60,11 +61,12 @@ class Request {
         rent.reportUndelivered(this.startDateTime)
     }
 
-    def reportSuccessfulDeliver(Integer currentKilometers) {
+    def reportSuccessfulDeliver(Integer kilometersDelivered) {
         if (!this.rent) {
             throw new RentNotExistsException();
         }
-        rent.activate(currentKilometers)
+        publication.checkKilometersDelivered(kilometersDelivered)
+        rent.activate(kilometersDelivered)
     }
 
     def reportNotReturned() {
@@ -74,12 +76,12 @@ class Request {
         rent.reportNotReturned(this.endDateTime)
     }
 
-    def reportSuccessfulReturn(Integer kilometers) {
+    def reportSuccessfulReturn(Integer kilometersReturned) {
         //todo penalizar al guest si aca nos pasamos
         if (!this.rent) {
             throw new RentNotExistsException();
         }
-        rent.finish(kilometers)
+        rent.finish(kilometersReturned)
         //todo publication actualizar precio
     }
 

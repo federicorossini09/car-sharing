@@ -1,7 +1,10 @@
 package car.sharing
 
+
 import car.sharing.exceptions.HostDoesNotOwnPublicationException
+import car.sharing.exceptions.ReturnNotifiedWithoutKilometersException
 import car.sharing.exceptions.ReviewAlreadySent
+import org.springframework.lang.Nullable
 
 class Host {
 
@@ -66,9 +69,11 @@ class Host {
         //todo guest.penalize()
     }
 
-    void reportSuccessfulReturn(Request request, Integer kilometers) {
+    void reportSuccessfulReturn(Request request, @Nullable Integer kilometersReturned) {
         this.checkHostsPublication(request.publication)
-        request.reportSuccessfulReturn(kilometers)
+        if (!kilometersReturned)
+            throw new ReturnNotifiedWithoutKilometersException()
+        request.reportSuccessfulReturn(kilometersReturned)
     }
 
     void reviewGuest(Request request, Review review) {

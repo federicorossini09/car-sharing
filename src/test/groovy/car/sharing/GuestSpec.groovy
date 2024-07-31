@@ -103,7 +103,7 @@ class GuestSpec extends Specification implements DomainUnitTest<Guest> {
         def request = guest.requests[0]
         request.accept()
         and: "the guest reports it as undelivered"
-        guest.reportSuccessfulDeliver(request, 55000)
+        guest.reportSuccessfulDelivery(request, 55000)
         then: "the rent is active"
         request.rent.isActive()
     }
