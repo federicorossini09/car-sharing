@@ -2,14 +2,16 @@ package car.sharing
 
 import car.sharing.exceptions.GuestDoesNotOwnsRequestException
 import car.sharing.exceptions.HostCannotRequestHisPublication
+import car.sharing.exceptions.ReviewAlreadySent
 
 import java.time.LocalDateTime
 
 class Guest {
 
     User user
-    static hasMany = [requests: Request]
+    static hasMany = [requests: Request, reviewsSent: Review]
     Score score = new Score()
+
     static constraints = {
     }
 
@@ -55,5 +57,25 @@ class Guest {
     def checkOwnsRequest(Request request) {
         if (!this.ownsRequest(request))
             throw new GuestDoesNotOwnsRequestException()
+    }
+
+    def reviewPublication(Request request, Review review) {
+        this.checkOwnsRequest(request)
+        this.checkReviewAlreadySent(request)
+        request.sendPublicationReview(review)
+        this.addToReviewsSent(review)
+    }
+
+    def receiveReview(Review review) {
+        this.score.receiveReview(review)
+    }
+
+    def checkReviewAlreadySent(Request request) {
+        if (isReviewAlreadySent(request))
+            throw new ReviewAlreadySent()
+    }
+
+    def isReviewAlreadySent(Request request) {
+        reviewsSent.any { it.sentForRequest(request) }
     }
 }

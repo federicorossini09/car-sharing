@@ -10,11 +10,21 @@
 <h3>Autos Publicados</h3>
 <g:if test="${!activePublications.isEmpty()}">
     <div class="row">
-        <div class="col-sm-3 mx-3">
-            <g:each in="${activePublications}" var="publication">
+        <g:each in="${activePublications}" var="publication">
+            <div class="col-sm-3 mx-3">
+
                 <div class="card car-sharing-card">
                     <div class="card-body">
-                        <h5 class="card-title">${publication.car.brand} ${publication.car.model}</h5>
+                        <div class="row">
+                            <div class="col">
+                                <h5 class="card-title">${publication.car.brand} ${publication.car.model}</h5>
+                            </div>
+                            <g:if test="${publication.isFeatured()}">
+                                <div class="col">
+                                    <p class="text-success float-right">Destacado</p>
+                                </div>
+                            </g:if>
+                        </div>
 
                         <p class="card-text">${publication.car.variant} - ${publication.car.year} - ${publication.car.kilometers}km</p>
                         <h6 class="card-text">u$s${publication.price.finalValue} /día</h6>
@@ -23,8 +33,8 @@
                                 id="${publication.id}"/>
                     </div>
                 </div>
-            </g:each>
-        </div>
+            </div>
+        </g:each>
     </div>
 </g:if>
 <g:else>

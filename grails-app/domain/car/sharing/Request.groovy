@@ -6,6 +6,8 @@ import car.sharing.exceptions.RentNotReturnedNotAvailableException
 import car.sharing.exceptions.RentNotScheduledException
 import car.sharing.exceptions.RentUndeliverNotAvailableException
 import org.springframework.security.access.method.P
+import car.sharing.exceptions.GuestCannotBeReviewedYet
+import car.sharing.exceptions.PublicationCannotBeReviewedYet
 
 import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
@@ -100,5 +102,17 @@ class Request {
     }
 
 
+    def sendPublicationReview(Review review) {
+        if (!this.rent.isFinished()) {
+            throw new PublicationCannotBeReviewedYet()
+        }
+        this.publication.receiveReview(review)
+    }
 
+    def sendGuestReview(Review review) {
+        if (!this.rent.isFinished()) {
+            throw new GuestCannotBeReviewedYet()
+        }
+        this.guest.receiveReview(review)
+    }
 }

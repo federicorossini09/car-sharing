@@ -15,8 +15,10 @@ class ScoreSpec extends Specification implements DomainUnitTest<Score> {
     void "default score at creation"() {
         when: "a score is created without parameters"
         def score = new Score()
-        then: "its default value is 3"
-        score.value == 3
+        then: "it is not ready"
+        !score.isReady()
+        and: "it does not have a value"
+        !score.value
     }
 
     void "score without penalties calculates as average"() {
@@ -24,8 +26,8 @@ class ScoreSpec extends Specification implements DomainUnitTest<Score> {
         def score = new Score()
         def review1 = new Review(text: "muy bueno", score: 5)
         def review2 = new Review(text: "muy malo", score: 1)
-        score.sendReview(review1)
-        score.sendReview(review2)
+        score.receiveReview(review1)
+        score.receiveReview(review2)
         when: "the score is calculated"
         score.calculate()
         then: "it is reduced 10 percent"
@@ -37,8 +39,8 @@ class ScoreSpec extends Specification implements DomainUnitTest<Score> {
         def score = new Score()
         def review1 = new Review(text: "muy bueno", score: 5)
         def review2 = new Review(text: "muy malo", score: 1)
-        score.sendReview(review1)
-        score.sendReview(review2)
+        score.receiveReview(review1)
+        score.receiveReview(review2)
         when: "it receives a penalty of NotDeliverOnTime"
         score.penalize(PenaltyReason.NotDeliverOnTime)
         then: "it is reduced 10 percent from the average"
