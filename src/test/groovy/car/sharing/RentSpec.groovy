@@ -46,8 +46,9 @@ class RentSpec extends Specification implements DomainUnitTest<Rent> {
         given: "an existing accepted rent"
         def rent = new Rent()
         rent.status = RentStatus.SCHEDULED
+        def startDate = LocalDateTime.parse("2024-01-01T00:00:00")
         when: "i report undelivered"
-        rent.reportUndelivered()
+        rent.reportUndelivered(startDate)
         then: "its not neither scheduled nor active"
         rent.isScheduledOrActive() == false
         and: "its reason  is not delivered"
@@ -59,7 +60,8 @@ class RentSpec extends Specification implements DomainUnitTest<Rent> {
         def rent = new Rent()
         rent.status = RentStatus.ACTIVE
         when: "i report not returned"
-        rent.reportNotReturned()
+        def returnDate = LocalDateTime.parse("2024-01-03T00:00:00")
+        rent.reportNotReturned(returnDate)
         then: "its not neither scheduled nor active"
         rent.isScheduledOrActive() == false
         and: "its reason is not delivered"

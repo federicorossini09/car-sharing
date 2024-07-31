@@ -39,11 +39,11 @@ class Rent {
         return hourDifference > 2
     }
 
-    def reportUndelivered() {
+    def reportUndelivered(LocalDateTime startDateTime) {
 
         if (!this.isScheduled()) {
             throw new RentNotScheduledException()
-        } else if (!this.couldReportUndeliver()) {
+        } else if (!this.couldReportUndeliver(startDateTime)) {
             throw new RentUndeliverNotAvailableException()
         }
         this.cancel()

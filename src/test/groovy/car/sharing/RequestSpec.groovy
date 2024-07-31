@@ -5,6 +5,7 @@ import spock.lang.Shared
 import spock.lang.Specification
 
 import java.time.Instant
+import java.time.LocalDateTime
 import java.time.Period
 
 class RequestSpec extends Specification implements DomainUnitTest<Request> {
@@ -46,7 +47,9 @@ class RequestSpec extends Specification implements DomainUnitTest<Request> {
 
     void "request accept"() {
         given: "an existing request"
-        def newRequest = new Request(publication: publication, deliveryPlace: "place1", returnPlace: "place2", startDateTime: "2024-01-01T00:00:00", endDateTime: "2024-01-03T00:00:00", guest: guest)
+        def startDate = LocalDateTime.parse("2024-01-01T00:00:00")
+        def returnDate = LocalDateTime.parse("2024-01-03T00:00:00")
+        def newRequest = new Request(publication: publication, deliveryPlace: "place1", returnPlace: "place2", startDateTime: startDate, endDateTime: returnDate, guest: guest)
         when: "the request is accepted"
         newRequest.accept()
         then: "the status changes "
@@ -55,7 +58,9 @@ class RequestSpec extends Specification implements DomainUnitTest<Request> {
 
     void "report successful deliver"() {
         given: "an existing accepted request"
-        def newRequest = new Request(publication: publication, deliveryPlace: "place1", returnPlace: "place2", startDate: "2024-01-01", endDate: "2024-01-03", guest: guest)
+        def startDate = LocalDateTime.parse("2024-01-01T00:00:00")
+        def returnDate = LocalDateTime.parse("2024-01-03T00:00:00")
+        def newRequest = new Request(publication: publication, deliveryPlace: "place1", returnPlace: "place2", startDateTime: startDate, endDateTime: returnDate, guest: guest)
         newRequest.accept()
         when: "the  deliver is reported"
         newRequest.reportSuccessfulDeliver()
@@ -66,7 +71,9 @@ class RequestSpec extends Specification implements DomainUnitTest<Request> {
 
     void "report undeliver"() {
         given: "an existing accepted request"
-        def newRequest = new Request(publication: publication, deliveryPlace: "place1", returnPlace: "place2", startDate: "2024-01-01", endDate: "2024-01-03", guest: guest)
+        def startDate = LocalDateTime.parse("2024-01-01T00:00:00")
+        def returnDate = LocalDateTime.parse("2024-01-03T00:00:00")
+        def newRequest = new Request(publication: publication, deliveryPlace: "place1", returnPlace: "place2", startDateTime: startDate, endDateTime: returnDate, guest: guest)
         newRequest.accept()
         when: "the undeliver is reported"
         newRequest.reportUndelivered()

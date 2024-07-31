@@ -6,6 +6,7 @@ import spock.lang.Shared
 import spock.lang.Specification
 
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.Period
 
 class HostSpec extends Specification implements DomainUnitTest<Host> {
@@ -108,15 +109,17 @@ class HostSpec extends Specification implements DomainUnitTest<Host> {
     void "host reports not returned car"() {
         given: "an existing host that has an accepted publication"
         host.addToPublications(publication1)
-        request1 = new Request(deliveryPlace: "place1", returnPlace: "place2", startDate: "2024-01-01", endDate: "2024-01-03", guest: guest2)
+        def startDate = LocalDateTime.parse("2024-01-01T00:00:00")
+        def returnDate = LocalDateTime.parse("2024-01-03T00:00:00")
+
+        request1 = new Request(deliveryPlace: "place1", returnPlace: "place2", startDateTime: startDate, endDateTime: returnDate, guest: guest2)
         publication1.addRequest(request1)
         request1.accept()
         and: "the  car was delivered by the host"
-        request1.reportSuccessfulDeliver()
+        request1.reportSuccessfulDeliver(20000)
         when: "the host reports that the car was not returned by the guest"
         request1.reportNotReturned()
-        then: "the publication is ____ (canceled?)"
-        //todo aca no deberia ser otro tipo?
+        then: "the publication is (canceled?)"
         request1.rent.isCanceled()
     }
 }
