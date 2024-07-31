@@ -1,6 +1,15 @@
 package car.sharing
 
-import car.sharing.exceptions.*
+import car.sharing.exceptions.RentAlreadyActiveException
+import car.sharing.exceptions.RentAlreadyFinishedException
+import car.sharing.exceptions.RentCannotBeActivatedException
+import car.sharing.exceptions.RentCannotBeFinishedException
+import car.sharing.exceptions.RentIsNotActiveException
+import car.sharing.exceptions.RentNotReturnedNotAvailableException
+import car.sharing.exceptions.RentNotScheduledException
+import car.sharing.exceptions.RentTooLateToCancelException
+import car.sharing.exceptions.RentUndeliverNotAvailableException
+import car.sharing.exceptions.KilometersReturnedBelowDeliveredException
 
 import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
@@ -16,6 +25,7 @@ class Rent {
     static constraints = {
         kilometersDelivered nullable: true
         kilometersReturned nullable: true
+        cancellationReason nullable: true
     }
 
     def couldReportUndeliver(LocalDateTime startDateTime) {
@@ -56,9 +66,9 @@ class Rent {
     def cancelFromHost() {
         if (isScheduled()) {
             this.cancel()
-            this.cancellationReason = CancellationReason.Other
+            this.cancellationReason = CancellationReason.CanceledByHost
         } else {
-            //TODO THROW EXCEPTION
+            throw new RentNotScheduledException()
         }
     }
 
@@ -67,9 +77,9 @@ class Rent {
         long dayDifference = ChronoUnit.DAYS.between(now, scheduledStartDate)
         if (dayDifference > 1) {
             this.cancel()
-            this.cancellationReason = CancellationReason.Other
+            this.cancellationReason = CancellationReason.CanceledByGuest
         } else {
-            //TODO THROW EXCEPTION
+            throw new RentTooLateToCancelException()
         }
 
     }

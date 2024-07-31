@@ -66,4 +66,10 @@ class GuestService {
         guest.reviewPublication(request, review)
         request.save(failOnError: true)
     }
+
+    def cancelFromGuest(Long requestId) {
+        def guest = getLoggedGuest()
+        def request = requestService.getById(requestId)
+        guest.cancelRent(request)
+    }
 }

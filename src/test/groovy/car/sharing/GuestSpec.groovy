@@ -72,12 +72,12 @@ class GuestSpec extends Specification implements DomainUnitTest<Guest> {
         when: "a publication is created"
         def newPublication = new Publication(host: host, car: car)
         and: "a request is sent by a Guest"
-        def newRequest = guest.addRequest(newPublication, "place1", "place2", LocalDateTime.parse("2024-01-01T00:00:00"), LocalDateTime.parse("2024-01-03T00:00:00"))
+        def newRequest = guest.addRequest(newPublication, "place1", "place2", LocalDateTime.parse("2024-01-01T00:00:00"), LocalDateTime.parse("2024-01-03T00:00:00"), 500)
         and: "the guest has no penalties"
         guest.score.penalties.size() == 0
         and: "its acepted and delivered"
         newRequest.accept()
-        newRequest.reportSuccessfulDeliver(10000)
+        newRequest.reportSuccessfulDeliver(50500)
         and: "is reported not returned"
         newRequest.reportNotReturned()
         then: "the guest is penalized"

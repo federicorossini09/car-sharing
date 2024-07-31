@@ -99,6 +99,15 @@
                                                             value="Denunciar No Entregado"/>
                                         </g:form>
                                     </div>
+                                    <div class="col d-flex justify-content-center">
+                                        <g:form name="cancelFromGuest" action="cancelFromGuest"
+                                                controller="rent"
+                                                id="${request.rent.id}">
+                                            <g:submitButton class="btn btn-danger"
+                                                            name="Submit"
+                                                            value="Cancelar"/>
+                                        </g:form>
+                                    </div>
                                 </g:if>
                                 <g:if test="${isHostPublication}">
                                     <div class="col d-flex justify-content-center">
@@ -118,6 +127,15 @@
                                                             value="Denunciar No Devuelto"/>
                                         </g:form>
                                     </div>
+                                    <div class="col d-flex justify-content-center">
+                                        <g:form name="cancelFromHost" action="cancelFromHost"
+                                                controller="rent"
+                                                id="${request.rent.id}">
+                                            <g:submitButton class="btn btn-danger"
+                                                            name="Submit"
+                                                            value="Cancelar"/>
+                                        </g:form>
+                                    </div>
                                 </g:if>
                                 <div class="col d-flex justify-content-center">
                                     <g:link name="newReview" controller="review"
@@ -125,14 +143,6 @@
                                             params="[requestId: request.id, isGuestRequest: isGuestRequest, isHostPublication: isHostPublication]">
                                         <button class="btn btn-primary">Hacer una Reseña</button>
                                     </g:link>
-                                </div>
-
-                                <div class="col d-flex justify-content-center">
-                                    <g:form name="cancel" action="cancel" id="${request.rent.id}">
-                                        <g:submitButton class="btn btn-danger"
-                                                        name="Submit"
-                                                        value="Cancelar"/>
-                                    </g:form>
                                 </div>
                             </div>
                         </div>
