@@ -4,6 +4,10 @@ import car.sharing.exceptions.RentAlreadyActiveException
 import car.sharing.exceptions.RentAlreadyFinishedException
 import car.sharing.exceptions.RentCannotBeActivatedException
 import car.sharing.exceptions.RentCannotBeFinishedException
+import car.sharing.exceptions.RentIsNotActiveException
+import car.sharing.exceptions.RentNotReturnedNotAvailableException
+import car.sharing.exceptions.RentNotScheduledException
+import car.sharing.exceptions.RentUndeliverNotAvailableException
 import org.apache.tomcat.jni.Local
 
 import java.time.LocalDate
@@ -23,22 +27,38 @@ class Rent {
         kilometersReturned nullable: true
     }
 
-    def reportUndelivered() {
-        if (this.isScheduled()) {
-            this.cancel()
-            this.cancellationReason = CancellationReason.NotDelivered
-        } else {
-            //TODO THROW EXCEPTION
-        }
+    def couldReportUndeliver(LocalDateTime startDateTime) {
+        def now = LocalDateTime.now()
+        long hourDifference = ChronoUnit.HOURS.between(startDateTime, now)
+        return hourDifference > 2
     }
 
-    def reportNotReturned() {
-        if (this.isActive()) {
-            this.cancel()
-            this.cancellationReason = CancellationReason.NotReturned
-        } else {
-            //TODO THROW EXCEPTION
+    def couldReportNotReturned(LocalDateTime endDateTime) {
+        def now = LocalDateTime.now()
+        long hourDifference = ChronoUnit.HOURS.between(endDateTime, now)
+        return hourDifference > 2
+    }
+
+    def reportUndelivered() {
+
+        if (!this.isScheduled()) {
+            throw new RentNotScheduledException()
+        } else if (!this.couldReportUndeliver()) {
+            throw new RentUndeliverNotAvailableException()
         }
+        this.cancel()
+        this.cancellationReason = CancellationReason.NotDelivered
+    }
+
+
+    def reportNotReturned(LocalDateTime endDateTime) {
+        if (!this.isActive()) {
+            throw new RentIsNotActiveException()
+        } else if (!this.couldReportNotReturned(endDateTime)) {
+            throw new RentNotReturnedNotAvailableException()
+        }
+        this.cancel()
+        this.cancellationReason = CancellationReason.NotReturned
 
     }
 
@@ -48,7 +68,6 @@ class Rent {
             this.cancellationReason = CancellationReason.Other
         } else {
             //TODO THROW EXCEPTION
-
         }
     }
 
