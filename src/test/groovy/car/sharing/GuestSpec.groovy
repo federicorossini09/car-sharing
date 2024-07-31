@@ -24,6 +24,8 @@ class GuestSpec extends Specification implements DomainUnitTest<Guest> {
     Car car
     @Shared
     Host host
+    @Shared
+    Price price
 
     def setup() {
         user1 = new User(username: "username1", password: "password")
@@ -31,6 +33,7 @@ class GuestSpec extends Specification implements DomainUnitTest<Guest> {
         host = new Host(user: user1)
         guest = new Guest(user: user2)
         car = new Car(year: 2018, brand: 'Ford', model: 'Focus', variant: '1.6 Titanium', vtvExpirationDate: LocalDate.now() + Period.ofDays(5), kilometers: 50000, licensePlate: "AC933WP")
+        price = new Price(car.year, car.kilometers)
     }
 
     def cleanup() {
@@ -70,7 +73,7 @@ class GuestSpec extends Specification implements DomainUnitTest<Guest> {
     void "guest gets penalized "() {
         given: "an existing car"
         when: "a publication is created"
-        def newPublication = new Publication(host: host, car: car)
+        def newPublication = new Publication(host: host, car: car, price: price)
         and: "a request is sent by a Guest"
         def newRequest = guest.addRequest(newPublication, "place1", "place2", LocalDateTime.parse("2024-01-01T00:00:00"), LocalDateTime.parse("2024-01-03T00:00:00"), 500)
         and: "the guest has no penalties"
@@ -88,7 +91,7 @@ class GuestSpec extends Specification implements DomainUnitTest<Guest> {
     void "guest reports rent undelivered"() {
         given: "an existing car"
         when: "an existing publication with two reviews"
-        def newPublication = new Publication(host: host, car: car)
+        def newPublication = new Publication(host: host, car: car, price: price)
         def review1 = new Review(text: "muy bueno", score: 5)
         def review2 = new Review(text: "muy malo", score: 1)
         newPublication.receiveReview(review1)
@@ -112,7 +115,7 @@ class GuestSpec extends Specification implements DomainUnitTest<Guest> {
     void "guest reports rent delivered"() {
         given: "an existing car"
         when: "a publication is created"
-        def newPublication = new Publication(host: host, car: car)
+        def newPublication = new Publication(host: host, car: car, price: price)
         and: "a request is sent by a Guest "
         def guest = new Guest(user: user2)
         def startDate = LocalDateTime.parse("2024-01-01T00:00:00")
@@ -130,7 +133,7 @@ class GuestSpec extends Specification implements DomainUnitTest<Guest> {
     void "cannot report delivery with less kilometers than published"() {
         given: "a publication with a car with 50000km"
         when: "a publication is created"
-        def newPublication = new Publication(host: host, car: car)
+        def newPublication = new Publication(host: host, car: car, price: price)
         and: "a request is sent by a Guest "
         def guest = new Guest(user: user2)
         def startDate = LocalDateTime.parse("2024-01-01T00:00:00")
@@ -148,7 +151,7 @@ class GuestSpec extends Specification implements DomainUnitTest<Guest> {
     void "cannot report delivery without kilometers returned"() {
         given: "a publication with a car with 50000km"
         when: "a publication is created"
-        def newPublication = new Publication(host: host, car: car)
+        def newPublication = new Publication(host: host, car: car, price: price)
         and: "a request is sent by a Guest "
         def guest = new Guest(user: user2)
         def startDate = LocalDateTime.parse("2024-01-01T00:00:00")
@@ -165,7 +168,7 @@ class GuestSpec extends Specification implements DomainUnitTest<Guest> {
 
     void "review publication"() {
         given: "a guest that requested a publication and the rent is finished"
-        def newPublication = new Publication(host: host, car: car)
+        def newPublication = new Publication(host: host, car: car, price: price)
         def startDate = LocalDateTime.parse("2024-01-01T00:00:00")
         def returnDate = LocalDateTime.parse("2024-01-03T00:00:00")
         def request = guest.addRequest(newPublication, "place1", "place2", startDate, returnDate, 500)
@@ -182,7 +185,7 @@ class GuestSpec extends Specification implements DomainUnitTest<Guest> {
 
     void "cannot review publication twice for the same request"() {
         given: "a guest that already reviewed a publication"
-        def newPublication = new Publication(host: host, car: car)
+        def newPublication = new Publication(host: host, car: car, price: price)
         def startDate = LocalDateTime.parse("2024-01-01T00:00:00")
         def returnDate = LocalDateTime.parse("2024-01-03T00:00:00")
         def request = guest.addRequest(newPublication, "place1", "place2", startDate, returnDate, 500)

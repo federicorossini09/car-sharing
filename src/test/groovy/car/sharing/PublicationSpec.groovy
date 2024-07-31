@@ -75,11 +75,11 @@ class PublicationSpec extends Specification implements DomainUnitTest<Publicatio
     void "request accept success"() {
         given: "an existing car"
         when: "a publication is created"
-        def newPublication = new Publication(host: host, car: car)
+        def newPublication = new Publication(host: host, car: car, price: price)
         def newPublicationIsValid = newPublication.validate()
         and: "a request is sent by a Guest"
         def guest = new Guest(user: user)
-        def request = new Request(publication: newPublication, deliveryPlace: "place1", returnPlace: "place2", startDateTime: "2024-01-01", endDateTime: "2024-01-03", guest: guest)
+        def request = new Request(publication: newPublication, deliveryPlace: "place1", returnPlace: "place2", startDateTime: LocalDateTime.parse("2024-01-01T00:00:00"), endDateTime: LocalDateTime.parse("2024-01-03T00:00:00"), guest: guest)
         and: "the request is accepted"
         newPublication.acceptRequest(request)
         then: "the request status is accepted"
@@ -90,8 +90,7 @@ class PublicationSpec extends Specification implements DomainUnitTest<Publicatio
     void "date validation returns false if dates collide with accepted request"() {
         given: "an existing car"
         when: "a publication is created"
-        def newPublication = new Publication(host: host, car: car)
-        def newPublicationIsValid = newPublication.validate()
+        def newPublication = new Publication(host: host, car: car, price: price)
         and: "a request is sent by a Guest"
         def guest = new Guest(user: user)
 
@@ -112,10 +111,10 @@ class PublicationSpec extends Specification implements DomainUnitTest<Publicatio
     void "date validation returns true if dates dont collide with accepted request"() {
         given: "an existing car"
         when: "a publication is created"
-        def newPublication = new Publication(host: host, car: car)
+        def newPublication = new Publication(host: host, car: car, price: price)
         and: "a request is sent by a Guest"
         def guest = new Guest(user: user)
-        def request = new Request(publication: newPublication, deliveryPlace: "place1", returnPlace: "place2", startDateTime: "2024-01-01", endDateTime: "2024-01-03", guest: guest)
+        def request = new Request(publication: newPublication, deliveryPlace: "place1", returnPlace: "place2", startDateTime: LocalDateTime.parse("2024-01-01T00:00:00"), endDateTime: LocalDateTime.parse("2024-01-03T00:00:00"), guest: guest)
         and: "the request is accepted"
         newPublication.acceptRequest(request)
         and: "i try to validate dates that collide with that accepted request"
@@ -142,9 +141,9 @@ class PublicationSpec extends Specification implements DomainUnitTest<Publicatio
 
     void "sending a review to a publication success"() {
         given: "an existing publication and an accepted requeest"
-        def newPublication = new Publication(host: host, car: car)
+        def newPublication = new Publication(host: host, car: car, price: price)
         def guest = new Guest(user: user)
-        def request = new Request(publication: newPublication, deliveryPlace: "place1", returnPlace: "place2", startDate: "2024-01-01", endDate: "2024-01-03", guest: guest)
+        def request = new Request(publication: newPublication, deliveryPlace: "place1", returnPlace: "place2", startDateTime: LocalDateTime.parse("2024-01-01T00:00:00"), endDateTime: LocalDateTime.parse("2024-01-03T00:00:00"), guest: guest)
         request.accept()
         when: "i send a review for that requst"
         def review2 = new Review(text: "no me fue tan bien", score: 3)

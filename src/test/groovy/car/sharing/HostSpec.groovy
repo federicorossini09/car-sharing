@@ -111,7 +111,7 @@ class HostSpec extends Specification implements DomainUnitTest<Host> {
     void "report successful return"() {
         given: "a host that owns a publication with an active rent"
         host.addToPublications(publication1)
-        request1 = new Request(deliveryPlace: "place1", returnPlace: "place2", startDate: "2024-01-01", endDate: "2024-01-03", guest: guest2)
+        request1 = new Request(deliveryPlace: "place1", returnPlace: "place2", startDateTime: LocalDateTime.parse("2024-01-01T00:00:00"), endDateTime: LocalDateTime.parse("2024-01-03T00:00:00"), guest: guest2)
         guest2.addToRequests(request1)
         publication1.addRequest(request1)
         request1.accept()
@@ -125,7 +125,7 @@ class HostSpec extends Specification implements DomainUnitTest<Host> {
     void "cannot report return with less kilometers than delivered"() {
         given: "a host that owns a publication with an active rent"
         host.addToPublications(publication1)
-        request1 = new Request(deliveryPlace: "place1", returnPlace: "place2", startDate: "2024-01-01", endDate: "2024-01-03", guest: guest2)
+        request1 = new Request(deliveryPlace: "place1", returnPlace: "place2", startDateTime: LocalDateTime.parse("2024-01-01T00:00:00"), endDateTime: LocalDateTime.parse("2024-01-03T00:00:00"), guest: guest2)
         guest2.addToRequests(request1)
         publication1.addRequest(request1)
         request1.accept()
@@ -139,7 +139,7 @@ class HostSpec extends Specification implements DomainUnitTest<Host> {
     void "cannot report return without kilometers returned"() {
         given: "a host that owns a publication with an active rent"
         host.addToPublications(publication1)
-        request1 = new Request(deliveryPlace: "place1", returnPlace: "place2", startDate: "2024-01-01", endDate: "2024-01-03", guest: guest2)
+        request1 = new Request(deliveryPlace: "place1", returnPlace: "place2", startDateTime: LocalDateTime.parse("2024-01-01T00:00:00"), endDateTime: LocalDateTime.parse("2024-01-03T00:00:00"), guest: guest2)
         guest2.addToRequests(request1)
         publication1.addRequest(request1)
         request1.accept()
@@ -170,7 +170,7 @@ class HostSpec extends Specification implements DomainUnitTest<Host> {
     void "review guest"() {
         given: "a host that owns a publication with a rent finished"
         host.addToPublications(publication1)
-        request1 = new Request(deliveryPlace: "place1", returnPlace: "place2", startDate: "2024-01-01", endDate: "2024-01-03", guest: guest2)
+        request1 = new Request(deliveryPlace: "place1", returnPlace: "place2", startDateTime: LocalDateTime.parse("2024-01-01T00:00:00"), endDateTime: LocalDateTime.parse("2024-01-03T00:00:00"), guest: guest2)
         guest2.addToRequests(request1)
         publication1.addRequest(request1)
         request1.accept()
@@ -185,7 +185,7 @@ class HostSpec extends Specification implements DomainUnitTest<Host> {
     void "cannot review guest twice for the same request"() {
         given: "a host already reviewed the guest"
         host.addToPublications(publication1)
-        request1 = new Request(deliveryPlace: "place1", returnPlace: "place2", startDate: "2024-01-01", endDate: "2024-01-03", guest: guest2)
+        request1 = new Request(deliveryPlace: "place1", returnPlace: "place2", startDateTime: LocalDateTime.parse("2024-01-01T00:00:00"), endDateTime: LocalDateTime.parse("2024-01-03T00:00:00"), guest: guest2)
         guest2.addToRequests(request1)
         publication1.addRequest(request1)
         request1.accept()

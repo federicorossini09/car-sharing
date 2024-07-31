@@ -29,7 +29,7 @@ class RequestSpec extends Specification implements DomainUnitTest<Request> {
         car = new Car(year: 2018, brand: 'Ford', model: 'Focus', variant: '1.6 Titanium', vtvExpirationDate: Instant.now() + Period.ofDays(5), kilometers: 50000, licensePlate: "AC933WP")
         user2 = new User(username: "username2", password: "password")
         guest = new Guest(user: user2)
-        publication = new Publication(host: host, car: car)
+        publication = new Publication(host: host, car: car, price: new Price(car.year, car.kilometers))
     }
 
     def cleanup() {
