@@ -1,6 +1,6 @@
 package car.sharing
 
-import car.sharing.exceptions.PublicationNotAvailableException
+import car.sharing.exceptions.*
 import grails.plugin.springsecurity.annotation.Secured
 import grails.validation.ValidationException
 
@@ -37,6 +37,10 @@ class RequestController extends AbstractController {
             flash.errorMessage = "El auto no está disponible en las fechas seleccionadas"
             flash.values = params
             redirect(action: 'newRequest', params: [publicationId: params.publicationId])
+        } catch (HostCannotRequestHisPublication ignored) {
+            flash.errorMessage = "No podés solicitar una publicación propia"
+            flash.values = params
+            redirect(action: 'newRequest', params: [publicationId: params.publicationId])
         }
     }
 
@@ -50,29 +54,39 @@ class RequestController extends AbstractController {
     }
 
     def viewPublicationRequests(params) {
-        //TODO: atrapar excepcion de que el host no es el dueño de la publicacion o que el host no existe
-        [requests   : hostService.getMyPublicationRequests(Long.valueOf(params.publicationId)),
-         publication: publicationService.getById(Long.valueOf(params.publicationId))
-        ]
+        try {
+            [requests   : hostService.getMyPublicationRequests(Long.valueOf(params.publicationId)),
+             publication: publicationService.getById(Long.valueOf(params.publicationId))
+            ]
+        } catch (HostNotFoundException | HostDoesNotOwnPublicationException ignored) {
+            return [error: 'No tenés permiso para ver este contenido']
+        }
     }
 
     def accept(params) {
         try {
             hostService.acceptPublicationRequest(params.publicationId, params.id)
             flash.successMessage = "Solicitud aceptada"
-            redirect(action: 'viewRequest', params: [requestId: params.id])
-        } catch (ValidationException e) {
-            //TODO: lanzar excpeciones especificas para distinguir cuál fue el motivo
-            flash.errors = e.errors
-            flash.errorMessage = "No se pudo aceptar la solicitud!"
+        } catch (PublicationNotAvailableException e) {
+            flash.errorMessage = "No se puede aceptar la solicitud. El auto ya no está disponible en las fechas solicitadas."
+        } catch (HostNotFoundException | HostDoesNotOwnPublicationException ignored) {
+            flash.errorMessage = "No tenés permiso para realizar esta acción"
+        } finally {
             redirect(action: 'viewRequest', params: [requestId: params.id])
         }
     }
 
     def reject(params) {
-        hostService.rejectPublicationRequest(params.id)
-        flash.successMessage = "Solicitud rechazada"
-        redirect(action: 'viewRequest', params: [requestId: params.id])
+        try {
+            hostService.rejectPublicationRequest(Long.valueOf(params.id))
+            flash.successMessage = "Solicitud rechazada"
+        } catch (RequestCannotBeRejectedException ignored) {
+            flash.errorMessage = 'La solicitud solo puede ser rechazada en estado Esperando'
+        } catch (HostNotFoundException | HostDoesNotOwnPublicationException ignored) {
+            flash.errorMessage = "No tenés permiso para realizar esta acción"
+        } finally {
+            redirect(action: 'viewRequest', params: [requestId: params.id])
+        }
     }
 
     def viewMyRequests() {

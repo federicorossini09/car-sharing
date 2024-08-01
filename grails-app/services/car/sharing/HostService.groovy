@@ -84,6 +84,9 @@ class HostService {
 
     def rejectPublicationRequest(Long requestId) {
         def host = getLoggedHost()
+        if (!host) {
+            throw new HostNotFoundException()
+        }
         def request = requestService.getById(requestId)
         host.rejectPublicationRequest(request, request.publication)
     }

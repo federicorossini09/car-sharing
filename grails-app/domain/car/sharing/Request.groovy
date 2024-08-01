@@ -4,6 +4,7 @@ import car.sharing.exceptions.GuestCannotBeReviewedYet
 import car.sharing.exceptions.PublicationCannotBeReviewedYet
 import car.sharing.exceptions.RentCannotBeActivatedException
 import car.sharing.exceptions.RentNotExistsException
+import car.sharing.exceptions.RequestCannotBeRejectedException
 
 import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
@@ -27,7 +28,11 @@ class Request {
     }
 
     def reject() {
-        this.setStatus(RequestStatus.REJECTED)
+        if (this.status == RequestStatus.WAITING)
+            this.setStatus(RequestStatus.REJECTED)
+        else {
+            throw new RequestCannotBeRejectedException()
+        }
     }
 
     def dateCollision(LocalDateTime date) {

@@ -37,8 +37,6 @@ class Publication {
     def acceptRequest(Request requestToAccept) {
         if (this.isNotInThePast(requestToAccept.startDateTime) && areDatesAvailable(requestToAccept.startDateTime, requestToAccept.endDateTime)) {
             requestToAccept.accept()
-        } else {
-            throw new PublicationNotAvailableException()
         }
     }
 
