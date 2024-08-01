@@ -7,7 +7,7 @@ import grails.plugin.springsecurity.annotation.Secured
 import grails.validation.ValidationException
 
 @Secured('isAuthenticated()')
-class ReviewController {
+class ReviewController extends AbstractController {
 
     GuestService guestService
 

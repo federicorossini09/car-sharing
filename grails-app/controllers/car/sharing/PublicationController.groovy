@@ -7,7 +7,7 @@ import grails.validation.ValidationException
 import java.time.LocalDate
 
 @Secured('isAuthenticated()')
-class PublicationController {
+class PublicationController extends AbstractController {
 
     HostService hostService
 
