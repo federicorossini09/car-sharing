@@ -1,6 +1,8 @@
 package car.sharing
 
+import car.sharing.exceptions.CarVtvExpired
 import car.sharing.exceptions.PublicationNotAvailableException
+import car.sharing.exceptions.RentCannotBeActivatedException
 import grails.testing.gorm.DomainUnitTest
 import spock.lang.Shared
 import spock.lang.Specification
@@ -23,7 +25,7 @@ class PublicationSpec extends Specification implements DomainUnitTest<Publicatio
     def setup() {
         user = new User(username: "username1", password: "password")
         host = new Host(user: user)
-        car = new Car(year: 2018, brand: 'Ford', model: 'Focus', variant: '1.6 Titanium', vtvExpirationDate: LocalDate.now() + Period.ofDays(5), kilometers: 20000, licensePlate: "AC933WP")
+        car = new Car(year: 2018, brand: 'Ford', model: 'Focus', variant: '1.6 Titanium', vtvExpirationDate: LocalDateTime.now() + Period.ofMonths(5), kilometers: 20000, licensePlate: "AC933WP")
         price = new Price(car.year, car.kilometers)
     }
 
@@ -79,7 +81,7 @@ class PublicationSpec extends Specification implements DomainUnitTest<Publicatio
         def newPublicationIsValid = newPublication.validate()
         and: "a request is sent by a Guest"
         def guest = new Guest(user: user)
-        def request = new Request(publication: newPublication, deliveryPlace: "place1", returnPlace: "place2", startDateTime: LocalDateTime.parse("2024-01-01T00:00:00"), endDateTime: LocalDateTime.parse("2024-01-03T00:00:00"), guest: guest)
+        def request = new Request(publication: newPublication, deliveryPlace: "place1", returnPlace: "place2", startDateTime: LocalDateTime.parse("2024-09-01T00:00:00"), endDateTime: LocalDateTime.parse("2024-09-03T00:00:00"), guest: guest)
         and: "the request is accepted"
         newPublication.acceptRequest(request)
         then: "the request status is accepted"
@@ -114,12 +116,12 @@ class PublicationSpec extends Specification implements DomainUnitTest<Publicatio
         def newPublication = new Publication(host: host, car: car, price: price)
         and: "a request is sent by a Guest"
         def guest = new Guest(user: user)
-        def request = new Request(publication: newPublication, deliveryPlace: "place1", returnPlace: "place2", startDateTime: LocalDateTime.parse("2024-01-01T00:00:00"), endDateTime: LocalDateTime.parse("2024-01-03T00:00:00"), guest: guest)
+        def request = new Request(publication: newPublication, deliveryPlace: "place1", returnPlace: "place2", startDateTime: LocalDateTime.parse("2024-10-01T00:00:00"), endDateTime: LocalDateTime.parse("2024-10-03T00:00:00"), guest: guest)
         and: "the request is accepted"
         newPublication.acceptRequest(request)
         and: "i try to validate dates that collide with that accepted request"
-        def date1 = LocalDateTime.parse("2024-01-05T00:00:00")
-        def date2 = LocalDateTime.parse("2024-01-06T00:00:00")
+        def date1 = LocalDateTime.parse("2024-10-05T00:00:00")
+        def date2 = LocalDateTime.parse("2024-10-06T00:00:00")
         then: "the dates are valid"
         newPublication.areDatesAvailable(date1, date2)
     }
@@ -189,5 +191,44 @@ class PublicationSpec extends Specification implements DomainUnitTest<Publicatio
         newPublication.receiveReview(review2)
         then: "it remains not featured"
         !newPublication.isFeatured()
+    }
+
+    void "cant activate rent if there is another active rent"() {
+        given: "an existing car"
+        when: "a publication is created"
+        def newPublication = new Publication(host: host, car: car, price: price)
+        def newPublicationIsValid = newPublication.validate()
+        and: "two request are sent by a Guest"
+        def guest = new Guest(user: user)
+        def request1 = new Request(publication: newPublication, deliveryPlace: "place1", returnPlace: "place2", startDateTime: LocalDateTime.parse("2024-09-01T00:00:00"), endDateTime: LocalDateTime.parse("2024-09-03T00:00:00"), guest: guest)
+        def request2 = new Request(publication: newPublication, deliveryPlace: "place1", returnPlace: "place2", startDateTime: LocalDateTime.parse("2024-09-04T00:00:00"), endDateTime: LocalDateTime.parse("2024-09-08T00:00:00"), guest: guest)
+        newPublication.addRequest(request1)
+        newPublication.addRequest(request1)
+        and: "the requests are accepted"
+        newPublication.acceptRequest(request1)
+        newPublication.acceptRequest(request2)
+        and: "both are reported delivered"
+        request1.reportSuccessfulDeliver(20000)
+        request2.reportSuccessfulDeliver(21000)
+        then: "cant activate rent if there is another active rent"
+        thrown RentCannotBeActivatedException
+
+    }
+
+
+    void "cant requests an expired vtv car date"() {
+        given: "an existing publication"
+        def car2 = new Car(year: 2018, brand: 'Ford', model: 'Focus', variant: '1.6 Titanium', vtvExpirationDate: LocalDateTime.now() - Period.ofDays(5), kilometers: 20000, licensePlate: "AC933WP")
+        def newPublication = new Publication(host: host, car: car2, price: price)
+        def user2 = new User(username: "username2", password: "password")
+
+        def guest = new Guest(user: user2)
+        when: "i send a request for a date that is expired"
+
+        def startDate = LocalDateTime.parse("2024-10-01T00:00:00")
+        def returnDate = LocalDateTime.parse("2024-10-03T00:00:00")
+        guest.addRequest(newPublication, "place1", "place2", startDate, returnDate, 20200)
+        then:
+        thrown CarVtvExpired
     }
 }

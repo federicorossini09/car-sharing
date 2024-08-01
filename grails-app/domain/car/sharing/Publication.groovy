@@ -1,5 +1,6 @@
 package car.sharing
 
+import car.sharing.exceptions.CarVtvExpired
 import car.sharing.exceptions.PublicationNotAvailableException
 
 import java.time.LocalDateTime
@@ -19,6 +20,7 @@ class Publication {
     static constraints = {
     }
 
+
     Publication updatePrice(BigDecimal newValue) {
         price.updateFinalValue(newValue)
         this
@@ -33,7 +35,7 @@ class Publication {
     }
 
     def acceptRequest(Request requestToAccept) {
-        if (areDatesAvailable(requestToAccept.startDateTime, requestToAccept.endDateTime)) {
+        if (this.isNotInThePast(requestToAccept.startDateTime) && areDatesAvailable(requestToAccept.startDateTime, requestToAccept.endDateTime)) {
             requestToAccept.accept()
         } else {
             throw new PublicationNotAvailableException()
@@ -56,7 +58,15 @@ class Publication {
         this.requests.findAll { it.rent }.collect { it.rent }
     }
 
+    boolean isNotInThePast(LocalDateTime requestedStartDate) {
+        LocalDateTime now = LocalDateTime.now()
+        return requestedStartDate.isAfter(now)
+    }
+
     boolean areDatesAvailable(LocalDateTime startDate, LocalDateTime endDate) {
+        if (car.isVtvValidByDate(endDate)) {
+            throw new CarVtvExpired()
+        }
         if (requests.every { request -> !request.isOccupying(startDate, endDate) })
             true
         else throw new PublicationNotAvailableException()
@@ -94,6 +104,10 @@ class Publication {
         this.price.finalValue
     }
 
+    def thereIsAnyActiveRent() {
+        return (requests.any { request -> request.rentIsActive() })
+    }
+  
     def updateCar(Integer kilometers) {
         this.car.updateKilometers(kilometers)
         this.price.update(this.car.year, kilometers)

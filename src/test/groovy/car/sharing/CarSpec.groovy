@@ -5,6 +5,7 @@ import spock.lang.Shared
 import spock.lang.Specification
 
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.Period
 
 class CarSpec extends Specification implements DomainUnitTest<Car> {
@@ -18,7 +19,7 @@ class CarSpec extends Specification implements DomainUnitTest<Car> {
     @Shared
     String variant
     @Shared
-    LocalDate vtvExpirationDate
+    LocalDateTime vtvExpirationDate
     @Shared
     String licensePlate
     @Shared
@@ -30,7 +31,7 @@ class CarSpec extends Specification implements DomainUnitTest<Car> {
         brand = "Ford"
         model = "Focus"
         variant = "1.6 Titanium"
-        vtvExpirationDate = LocalDate.now() + Period.ofDays(5)
+        vtvExpirationDate = LocalDateTime.now() + Period.ofMonths(5)
         licensePlate = "AC933WP"
     }
 

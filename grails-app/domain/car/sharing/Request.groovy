@@ -2,6 +2,7 @@ package car.sharing
 
 import car.sharing.exceptions.GuestCannotBeReviewedYet
 import car.sharing.exceptions.PublicationCannotBeReviewedYet
+import car.sharing.exceptions.RentCannotBeActivatedException
 import car.sharing.exceptions.RentNotExistsException
 
 import java.time.LocalDateTime
@@ -61,6 +62,10 @@ class Request {
         if (!this.rent) {
             throw new RentNotExistsException();
         }
+        if (publication.thereIsAnyActiveRent()) {
+            throw new RentCannotBeActivatedException()
+        }
+
         publication.checkKilometersDelivered(kilometersDelivered)
         rent.activate(kilometersDelivered)
     }
@@ -118,5 +123,9 @@ class Request {
 
     def calculateDays() {
         ChronoUnit.DAYS.between(this.startDateTime, this.endDateTime).toInteger()
+    }
+
+    def rentIsActive() {
+        this.rent && this.rent.isActive()
     }
 }
