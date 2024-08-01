@@ -1,10 +1,6 @@
 package car.sharing
 
-import car.sharing.exceptions.GuestCannotBeReviewedYet
-import car.sharing.exceptions.PublicationCannotBeReviewedYet
-import car.sharing.exceptions.RentCannotBeActivatedException
-import car.sharing.exceptions.RentNotExistsException
-import car.sharing.exceptions.RequestCannotBeRejectedException
+import car.sharing.exceptions.*
 
 import java.time.LocalDateTime
 
@@ -34,8 +30,11 @@ class Request {
         }
     }
 
-    def dateCollision(LocalDateTime date) {
-        return date >= this.startDateTime && date <= this.endDateTime
+    def dateCollision(LocalDateTime newStart, LocalDateTime newEnd) {
+        (newStart <= this.startDateTime && newEnd >= this.endDateTime) ||
+                (newStart >= this.startDateTime && newStart <= this.endDateTime && newEnd >= this.startDateTime && newEnd <= this.endDateTime) ||
+                (newStart <= this.startDateTime && newEnd >= this.startDateTime && newEnd <= this.endDateTime) ||
+                (newStart >= this.startDateTime && newStart <= this.endDateTime && newEnd >= this.endDateTime)
     }
 
     static constraints = {
@@ -48,7 +47,7 @@ class Request {
 
     boolean isOccupying(LocalDateTime startDate, LocalDateTime endDate) {
         return this.rent && this.rent.isScheduledOrActive()
-                && (this.dateCollision(startDate) | this.dateCollision(endDate))
+                && (this.dateCollision(startDate, endDate))
     }
 
     def isSameAs(Request request) {

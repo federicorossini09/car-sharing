@@ -65,10 +65,14 @@ class RequestController extends AbstractController {
 
     def accept(params) {
         try {
-            hostService.acceptPublicationRequest(params.publicationId, params.id)
+            hostService.acceptPublicationRequest(params.id)
             flash.successMessage = "Solicitud aceptada"
-        } catch (PublicationNotAvailableException e) {
+        } catch (PublicationNotAvailableException ignored) {
             flash.errorMessage = "No se puede aceptar la solicitud. El auto ya no está disponible en las fechas solicitadas."
+        } catch (RequestExpiredException ignored) {
+            flash.errorMessage = "La solicitud ya está vencida."
+        } catch (CarVtvExpired ignored) {
+            flash.errorMessage = "La VTV se vencerá en las fechas solicitadas."
         } catch (HostNotFoundException | HostDoesNotOwnPublicationException ignored) {
             flash.errorMessage = "No tenés permiso para realizar esta acción"
         } finally {

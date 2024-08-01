@@ -106,16 +106,17 @@
                                         <g:form name="reportNotDelivered"
                                                 action="reportNotDelivered"
                                                 controller="rent"
-                                                id="${request.rent.id}">
+                                                id="${request.id}">
                                             <g:submitButton class="btn btn-warning text-center"
                                                             name="Submit"
                                                             value="Denunciar No Entregado"/>
                                         </g:form>
                                     </div>
+
                                     <div class="col d-flex justify-content-center">
                                         <g:form name="cancelFromGuest" action="cancelFromGuest"
                                                 controller="rent"
-                                                id="${request.rent.id}">
+                                                id="${request.id}">
                                             <g:submitButton class="btn btn-danger"
                                                             name="Submit"
                                                             value="Cancelar"/>
@@ -134,16 +135,17 @@
                                     <div class="col d-flex justify-content-center">
                                         <g:form name="reportNotReturned" action="reportNotReturned"
                                                 controller="rent"
-                                                id="${request.rent.id}">
+                                                id="${request.id}">
                                             <g:submitButton class="btn btn-warning"
                                                             name="Submit"
                                                             value="Denunciar No Devuelto"/>
                                         </g:form>
                                     </div>
+
                                     <div class="col d-flex justify-content-center">
                                         <g:form name="cancelFromHost" action="cancelFromHost"
                                                 controller="rent"
-                                                id="${request.rent.id}">
+                                                id="${request.id}">
                                             <g:submitButton class="btn btn-danger"
                                                             name="Submit"
                                                             value="Cancelar"/>

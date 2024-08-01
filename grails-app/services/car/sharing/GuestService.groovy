@@ -37,7 +37,7 @@ class GuestService {
 
     def getLoggedUserRequests() {
         def guest = getLoggedGuest();
-        guest.requests
+        guest.requests.sort({ r1, r2 -> r1.id == r2.id ? 0 : r1.id < r2.id ? 1 : -1 })
     }
 
     def notifyDelivery(params) {
