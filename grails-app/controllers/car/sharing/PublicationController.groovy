@@ -4,7 +4,7 @@ import car.sharing.exceptions.HostNotFoundException
 import grails.plugin.springsecurity.annotation.Secured
 import grails.validation.ValidationException
 
-import java.time.LocalDate
+import java.time.LocalDateTime
 
 @Secured('isAuthenticated()')
 class PublicationController extends AbstractController {
@@ -40,7 +40,7 @@ class PublicationController extends AbstractController {
     }
 
     def parseCarParams(params) {
-        params.vtvExpirationDate = params.vtvExpirationDate ? LocalDate.parse(params.vtvExpirationDate) : null
+        params.vtvExpirationDate = params.vtvExpirationDate ? LocalDateTime.parse(params.vtvExpirationDate + "T00:00:00") : null
         params
     }
 

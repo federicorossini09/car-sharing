@@ -16,7 +16,7 @@ class Car {
     Integer kilometers
 
     static constraints = {
-        licensePlate blank: false
+        licensePlate blank: false, unique: true
         brand blank: false
         model blank: false
         variant blank: false

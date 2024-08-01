@@ -110,7 +110,7 @@
                                    value="${errors?.getFieldError("licensePlate")}"/>
                             <label for="licensePlate">Patente</label>
                             <input type="text"
-                                   class="form-control ${kilometersError ? 'is-invalid' : ''}"
+                                   class="form-control ${licensePlateError ? 'is-invalid' : ''}"
                                    id="licensePlate" name="licensePlate"
                                    value="${values?.licensePlate}"
                                    placeholder="">
