@@ -1,4 +1,4 @@
-<%@ page import="java.time.format.DateTimeFormatter; car.sharing.RentStatus; car.sharing.RequestStatus" contentType="text/html;charset=UTF-8" %>
+<%@ page import="java.time.format.FormatStyle; java.time.format.DateTimeFormatter; car.sharing.RentStatus; car.sharing.RequestStatus" contentType="text/html;charset=UTF-8" %>
 <html>
 <head>
     <title>Solicitud</title>
@@ -70,7 +70,7 @@
                                     <div class="row mb-2">
                                         <div class="col mr-2">
                                             <div class="text-xs text-muted text-primary text-uppercase mb-1">
-                                                Kilometros Entregados</div>
+                                                Kilómetros Entregados</div>
 
                                             <div class="h5 mb-0 font-weight-bold text-gray-800">${rent.kilometersDelivered ? rent.kilometersDelivered + 'km' : '-'}</div>
                                         </div>
@@ -82,7 +82,7 @@
                                     <div class="row mb-2">
                                         <div class="col mr-2">
                                             <div class="text-xs text-muted text-primary text-uppercase mb-1">
-                                                Kilometros Devueltos</div>
+                                                Kilómetros Devueltos</div>
 
                                             <div class="h5 mb-0 font-weight-bold text-gray-800">${rent.kilometersReturned ? rent.kilometersReturned + 'km' : '-'}</div>
                                         </div>
@@ -190,7 +190,7 @@
                                 <div class="row mb-2">
                                     <div class="col mr-2">
                                         <div class="text-xs text-muted text-primary text-uppercase mb-1">
-                                            Kilometros a recorrer</div>
+                                            Kilómetros a recorrer</div>
 
                                         <div class="h5 mb-0 font-weight-bold text-gray-800">${request.kilometers}km</div>
                                     </div>
@@ -216,7 +216,7 @@
                                         <div class="text-xs text-muted text-primary text-uppercase mb-1">
                                             Fecha</div>
 
-                                        <div class="h5 mb-0 font-weight-bold text-gray-800">${request.startDateTime}</div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800">${DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT).format(request.startDateTime)}</div>
                                     </div>
                                 </div>
 
@@ -239,7 +239,7 @@
                                         <div class="text-xs text-muted text-primary text-uppercase mb-1">
                                             Fecha</div>
 
-                                        <div class="h5 mb-0 font-weight-bold text-gray-800">${request.endDateTime}</div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800">${DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT).format(request.endDateTime)}</div>
                                     </div>
                                 </div>
                             </div>
@@ -329,7 +329,7 @@
                     <div class="modal-body">
                         <div class="form-group">
                             <div class="form-group">
-                                <label for="kilometersDelivered">¿Con cuántos kilometros te entregaron el auto?</label>
+                                <label for="kilometersDelivered">¿Con cuántos kilómetros te entregaron el auto?</label>
                                 <input type="number"
                                        class="form-control"
                                        id="kilometersDelivered"
@@ -353,7 +353,7 @@
                     <div class="modal-body">
                         <div class="form-group">
                             <div class="form-group">
-                                <label for="kilometersReturned">¿Con cuántos kilometros te devolvieron el auto?</label>
+                                <label for="kilometersReturned">¿Con cuántos kilómetros te devolvieron el auto?</label>
                                 <input type="number"
                                        class="form-control"
                                        id="kilometersReturned"

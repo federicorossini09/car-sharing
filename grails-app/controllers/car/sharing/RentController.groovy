@@ -20,7 +20,7 @@ class RentController extends AbstractController {
         } catch (RentAlreadyActiveException ignored) {
             flash.errorMessage = 'La renta ya se encuentra en curso'
         } catch (DeliveryNotifiedWithoutKilometersException ignored) {
-            flash.errorMessage = 'Es necesario indicar con cuántos kilometros recibiste el auto'
+            flash.errorMessage = 'Es necesario indicar con cuántos kilómetros recibiste el auto'
         } catch (KilometersDeliveredBelowPublishedException ignored) {
             flash.errorMessage = 'El kilometraje entregado no puede ser inferior al publicado'
         } catch (GuestDoesNotOwnsRequestException ignored) {
@@ -40,7 +40,7 @@ class RentController extends AbstractController {
         } catch (RentAlreadyFinishedException ignored) {
             flash.errorMessage = 'La renta ya se encuentra finalizada'
         } catch (ReturnNotifiedWithoutKilometersException ignored) {
-            flash.errorMessage = 'Es necesario indicar con cuántos kilometros te devolvieron el auto'
+            flash.errorMessage = 'Es necesario indicar con cuántos kilómetros te devolvieron el auto'
         } catch (KilometersReturnedBelowDeliveredException ignored) {
             flash.errorMessage = 'El kilometraje en la devolución no puede ser inferior al indicado en la entrega'
         } catch (HostNotFoundException ignored) {

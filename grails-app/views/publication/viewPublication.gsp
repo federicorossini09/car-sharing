@@ -1,4 +1,4 @@
-<%@ page import="java.time.format.DateTimeFormatter; car.sharing.PublicationStatus" contentType="text/html;charset=UTF-8" %>
+<%@ page import="java.time.format.FormatStyle; java.time.format.DateTimeFormatter; car.sharing.PublicationStatus" contentType="text/html;charset=UTF-8" %>
 <html>
 <head>
     <title>Publicación</title>
@@ -79,7 +79,7 @@
                                     <div class="text-xs text-muted text-primary text-uppercase">
                                         VTV vigente hasta</div>
 
-                                    <div class="h5 mb-1 font-weight-bold text-gray-800">${car.vtvExpirationDate}</div>
+                                    <div class="h5 mb-1 font-weight-bold text-gray-800">${DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG).format(car.vtvExpirationDate)}</div>
                                 </div>
                             </div>
 

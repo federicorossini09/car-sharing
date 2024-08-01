@@ -31,7 +31,7 @@
                                 <div class="form-group">
                                     <g:set var="kilometersError"
                                            value="${errors?.getFieldError("kilometers")}"/>
-                                    <label for="kilometers">¿Cuántos kilometros vas a utilizar el auto?</label>
+                                    <label for="kilometers">¿Cuántos kilómetros vas a utilizar el auto?</label>
                                     <input type="number"
                                            class="form-control ${kilometersError ? 'is-invalid' : ''}"
                                            id="kilometers"
