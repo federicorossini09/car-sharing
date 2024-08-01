@@ -325,7 +325,7 @@
             <g:if test="${isGuestRequest}">
                 <g:form name="notifyDelivery" action="notifyDelivery"
                         controller="rent"
-                        id="${request?.rent?.id}">
+                        id="${request?.id}">
                     <div class="modal-body">
                         <div class="form-group">
                             <div class="form-group">
@@ -349,7 +349,7 @@
             <g:else>
                 <g:form name="notifyReturn" action="notifyReturn"
                         controller="rent"
-                        id="${request?.rent?.id}">
+                        id="${request?.id}">
                     <div class="modal-body">
                         <div class="form-group">
                             <div class="form-group">

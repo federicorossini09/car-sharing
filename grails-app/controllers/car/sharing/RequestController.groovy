@@ -33,6 +33,8 @@ class RequestController extends AbstractController {
             flash.errors = e.errors
             flash.values = params
             redirect(action: 'newRequest', params: [publicationId: params.publicationId])
+        } catch (CarVtvExpired ignored) {
+            flash.errorMessage = "La VTV se vencerá en las fechas solicitadas."
         } catch (PublicationNotAvailableException ignored) {
             flash.errorMessage = "El auto no está disponible en las fechas seleccionadas"
             flash.values = params
