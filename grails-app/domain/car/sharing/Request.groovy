@@ -7,7 +7,6 @@ import car.sharing.exceptions.RentNotExistsException
 import car.sharing.exceptions.RequestCannotBeRejectedException
 
 import java.time.LocalDateTime
-import java.time.temporal.ChronoUnit
 
 class Request {
 
@@ -128,7 +127,7 @@ class Request {
     }
 
     def calculateDays() {
-        ChronoUnit.DAYS.between(this.startDateTime, this.endDateTime).toInteger()
+        this.endDateTime.getDayOfMonth() - this.startDateTime.getDayOfMonth()
     }
 
     def rentIsActive() {

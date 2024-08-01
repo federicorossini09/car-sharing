@@ -13,7 +13,7 @@ class TotalPrice {
 
     TotalPrice(Integer days, BigDecimal perDayValue, Integer kilometers, Boolean featuredGuest) {
 
-        def total = days * perDayValue
+        def total = calculateDaysTotal(days, perDayValue)
 
         def kilometersPrice = calculateKilometersPrice(kilometers)
 
@@ -24,6 +24,14 @@ class TotalPrice {
         this.value = total
     }
 
+    private static BigDecimal calculateDaysTotal(Integer days, BigDecimal perDayValue) {
+        if (days == 0) {
+            perDayValue
+        } else {
+            days * perDayValue
+        }
+    }
+
     private static BigDecimal applyFeaturedGuestDiscount(boolean featuredGuest, BigDecimal total) {
         if (featuredGuest) {
             total *= FEATURED_GUEST_DISCOUNT_FACTOR
@@ -32,7 +40,7 @@ class TotalPrice {
     }
 
     private static BigDecimal calculateKilometersPrice(Integer kilometers) {
-        
+
         if (kilometers <= MAX_FREE_KILOMETERS)
             return BigDecimal.ZERO
 
