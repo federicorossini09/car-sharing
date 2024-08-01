@@ -1,12 +1,13 @@
 package car.sharing
 
 import grails.testing.gorm.DomainUnitTest
+import org.mockito.MockedStatic
 import spock.lang.Shared
 import spock.lang.Specification
 
-import java.time.LocalDate
-import java.time.LocalDateTime
-import java.time.Period
+import java.time.*
+
+import static org.mockito.Mockito.mockStatic
 
 class CarSpec extends Specification implements DomainUnitTest<Car> {
 
@@ -24,14 +25,20 @@ class CarSpec extends Specification implements DomainUnitTest<Car> {
     String licensePlate
     @Shared
     Integer kilometers
+    @Shared
+    LocalDateTime now
+
+    static final String FIXED_DATE = "2024-08-01T10:00:00Z"
 
     def setup() {
+        Clock clock = Clock.fixed(Instant.parse(FIXED_DATE), ZoneId.of("UTC"));
+        now = LocalDateTime.now(clock)
         year = 2018
         kilometers = 50000
         brand = "Ford"
         model = "Focus"
         variant = "1.6 Titanium"
-        vtvExpirationDate = LocalDateTime.now() + Period.ofMonths(5)
+        vtvExpirationDate = now + Period.ofMonths(5)
         licensePlate = "AC933WP"
     }
 
@@ -106,12 +113,17 @@ class CarSpec extends Specification implements DomainUnitTest<Car> {
     }
 
     void "car cannot be crated with expired vtvExpirationDate"() {
-        when: "create a car without license plate"
-        def dateFiveDaysAgo = LocalDate.now() - Period.ofDays(5)
-        def car = new Car(year: year, brand: brand, model: model, variant: variant, vtvExpirationDate: dateFiveDaysAgo, licensePlate: licensePlate, kilometers: kilometers)
+        when: "create a car without expired vtv"
+        def dateFiveDaysAgo = now - Period.ofDays(5)
+        def car
+        try (MockedStatic<LocalDateTime> mockedStatic = mockStatic(LocalDateTime.class)) {
+            mockedStatic.when(LocalDateTime::now).thenReturn(now);
+            car = new Car(year: year, brand: brand, model: model, variant: variant, vtvExpirationDate: dateFiveDaysAgo, licensePlate: licensePlate, kilometers: kilometers)
+        }
         def validCar = car.validate()
         then: "Car is not valid"
         !validCar && car.errors.getFieldError().getField() == "vtvExpirationDate"
+
     }
 
     void "car cannot be crated if has more than 200000 kilometers"() {

@@ -2,6 +2,7 @@ package car.sharing
 
 import car.sharing.exceptions.CarVtvExpired
 import car.sharing.exceptions.PublicationNotAvailableException
+import car.sharing.exceptions.RequestExpiredException
 
 import java.time.LocalDateTime
 
@@ -37,8 +38,6 @@ class Publication {
     def acceptRequest(Request requestToAccept) {
         if (this.isNotInThePast(requestToAccept.startDateTime) && areDatesAvailable(requestToAccept.startDateTime, requestToAccept.endDateTime)) {
             requestToAccept.accept()
-        } else {
-            throw new PublicationNotAvailableException()
         }
     }
 
@@ -47,7 +46,8 @@ class Publication {
     }
 
     void addRequest(Request request) {
-        this.addToRequests(request)
+        if (areDatesAvailable(request.startDateTime, request.endDateTime))
+            this.addToRequests(request)
     }
 
     int lengthOfRequests() {
@@ -60,7 +60,9 @@ class Publication {
 
     boolean isNotInThePast(LocalDateTime requestedStartDate) {
         LocalDateTime now = LocalDateTime.now()
-        return requestedStartDate.isAfter(now)
+        if (requestedStartDate.isAfter(now))
+            true
+        else throw new RequestExpiredException()
     }
 
     boolean areDatesAvailable(LocalDateTime startDate, LocalDateTime endDate) {
@@ -107,7 +109,7 @@ class Publication {
     def thereIsAnyActiveRent() {
         return (requests.any { request -> request.rentIsActive() })
     }
-  
+
     def updateCar(Integer kilometers) {
         this.car.updateKilometers(kilometers)
         this.price.update(this.car.year, kilometers)

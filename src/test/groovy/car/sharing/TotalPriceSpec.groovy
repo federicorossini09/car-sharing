@@ -34,4 +34,12 @@ class TotalPriceSpec extends Specification implements DomainUnitTest<TotalPrice>
         then: "the value is 429.25"
         totalPrice.value == 429.25
     }
+
+    void "total price for same day"() {
+        given: "0 days, a per day value of 100, 50 kilometers and no featured guest"
+        when: "a total price is created"
+        def totalPrice = new TotalPrice(0, 100, 50, false)
+        then: "the value is 100"
+        totalPrice.value == 100
+    }
 }

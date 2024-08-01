@@ -1,12 +1,8 @@
 package car.sharing
 
-import car.sharing.exceptions.GuestCannotBeReviewedYet
-import car.sharing.exceptions.PublicationCannotBeReviewedYet
-import car.sharing.exceptions.RentCannotBeActivatedException
-import car.sharing.exceptions.RentNotExistsException
+import car.sharing.exceptions.*
 
 import java.time.LocalDateTime
-import java.time.temporal.ChronoUnit
 
 class Request {
 
@@ -27,11 +23,18 @@ class Request {
     }
 
     def reject() {
-        this.setStatus(RequestStatus.REJECTED)
+        if (this.status == RequestStatus.WAITING)
+            this.setStatus(RequestStatus.REJECTED)
+        else {
+            throw new RequestCannotBeRejectedException()
+        }
     }
 
-    def dateCollision(LocalDateTime date) {
-        return date >= this.startDateTime && date <= this.endDateTime
+    def dateCollision(LocalDateTime newStart, LocalDateTime newEnd) {
+        (newStart <= this.startDateTime && newEnd >= this.endDateTime) ||
+                (newStart >= this.startDateTime && newStart <= this.endDateTime && newEnd >= this.startDateTime && newEnd <= this.endDateTime) ||
+                (newStart <= this.startDateTime && newEnd >= this.startDateTime && newEnd <= this.endDateTime) ||
+                (newStart >= this.startDateTime && newStart <= this.endDateTime && newEnd >= this.endDateTime)
     }
 
     static constraints = {
@@ -44,7 +47,7 @@ class Request {
 
     boolean isOccupying(LocalDateTime startDate, LocalDateTime endDate) {
         return this.rent && this.rent.isScheduledOrActive()
-                && (this.dateCollision(startDate) | this.dateCollision(endDate))
+                && (this.dateCollision(startDate, endDate))
     }
 
     def isSameAs(Request request) {
@@ -56,6 +59,7 @@ class Request {
             throw new RentNotExistsException();
         }
         rent.reportUndelivered(this.startDateTime)
+        this.publication.penalize(PenaltyReason.NotDeliverOnTime)
     }
 
     def reportSuccessfulDeliver(Integer kilometersDelivered) {
@@ -74,8 +78,8 @@ class Request {
         if (!this.rent) {
             throw new RentNotExistsException();
         }
-        guest.penalize(PenaltyReason.NotReturnOnTime)
         rent.reportNotReturned(this.endDateTime)
+        guest.penalize(PenaltyReason.NotReturnOnTime)
     }
 
     def reportSuccessfulReturn(Integer kilometersReturned) {
@@ -122,7 +126,7 @@ class Request {
     }
 
     def calculateDays() {
-        ChronoUnit.DAYS.between(this.startDateTime, this.endDateTime).toInteger()
+        this.endDateTime.getDayOfMonth() - this.startDateTime.getDayOfMonth()
     }
 
     def rentIsActive() {

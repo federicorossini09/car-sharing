@@ -20,14 +20,10 @@ class Guest {
     def addRequest(Publication publication, String deliveryPlace, String returnPlace, LocalDateTime startDate, LocalDateTime endDate, @Nullable Integer kilometers) {
 
         checkUserCanRequestPublication(publication)
-
-        //TODO: tal vez esta validacion es mejor que esté dentro del método "publication.addRequest" asi siempre queda adentro de publication
-        if (publication.areDatesAvailable(startDate, endDate)) {
-            def newRequest = new Request(deliveryPlace: deliveryPlace, returnPlace: returnPlace, startDateTime: startDate, endDateTime: endDate, kilometers: kilometers, guest: this)
-            publication.addRequest(newRequest)
-            this.addToRequests(newRequest)
-            newRequest
-        }
+        def newRequest = new Request(deliveryPlace: deliveryPlace, returnPlace: returnPlace, startDateTime: startDate, endDateTime: endDate, kilometers: kilometers, guest: this)
+        publication.addRequest(newRequest)
+        this.addToRequests(newRequest)
+        newRequest
     }
 
     def checkUserCanRequestPublication(Publication publication) {
@@ -39,8 +35,6 @@ class Guest {
     void reportUndelivered(Request request, Publication publication) {
         this.checkOwnsRequest(request)
         request.reportUndelivered()
-        //todo esto de abajo deberia ir en el metodo de arriba
-        publication.penalize(PenaltyReason.NotDeliverOnTime)
     }
 
     void reportSuccessfulDelivery(Request request, @Nullable Integer kilometersDelivered) {

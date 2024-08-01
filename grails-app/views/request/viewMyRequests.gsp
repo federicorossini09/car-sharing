@@ -1,4 +1,4 @@
-<%@ page import="car.sharing.RequestStatus" contentType="text/html;charset=UTF-8" %>
+<%@ page import="java.time.format.FormatStyle; java.time.format.DateTimeFormatter; car.sharing.RentStatus; car.sharing.RequestStatus" contentType="text/html;charset=UTF-8" %>
 <html>
 <head>
     <title>Mis Solicitudes</title>
@@ -26,6 +26,23 @@
                                     <span class="badge badge-danger">Rechazada</span>
                                 </g:if>
                             </div>
+                            <g:if test="${request.rent}">
+                                <div class="mb-2">
+                                    <span class="text-xs text-muted text-primary mb-1">Renta</span>
+                                    <g:if test="${request.rent.status == RentStatus.FINISHED}">
+                                        <span class="badge badge-success"></span>
+                                    </g:if>
+                                    <g:if test="${request.rent.status == RentStatus.SCHEDULED}">
+                                        <span class="badge badge-warning">Programada</span>
+                                    </g:if>
+                                    <g:if test="${request.rent.status == RentStatus.CANCELED}">
+                                        <span class="badge badge-danger">Cancelada</span>
+                                    </g:if>
+                                    <g:if test="${request.rent.status == RentStatus.ACTIVE}">
+                                        <span class="badge badge-info">En Curso</span>
+                                    </g:if>
+                                </div>
+                            </g:if>
 
                             <h5 class="card-text">${request.publication.car.brand} ${request.publication.car.model} ${request.publication.car.variant}</h5>
                             <h6 class="card-title">u$s${request.publication.price.finalValue} /día</h6>
@@ -33,9 +50,18 @@
                             <div class="row mb-2">
                                 <div class="col mr-2">
                                     <div class="text-xs text-muted text-primary mb-1">
+                                        Kilómetros</div>
+
+                                    <div class="mb-0 font-weight-bold text-gray-800">${request.kilometers}km</div>
+                                </div>
+                            </div>
+
+                            <div class="row mb-2">
+                                <div class="col mr-2">
+                                    <div class="text-xs text-muted text-primary mb-1">
                                         Entrega</div>
 
-                                    <div class="mb-0 font-weight-bold text-gray-800">${request.startDateTime}</div>
+                                    <div class="mb-0 font-weight-bold text-gray-800">${DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT).format(request.startDateTime)}</div>
                                 </div>
                             </div>
 
@@ -44,7 +70,7 @@
                                     <div class="text-xs text-muted text-primary mb-1">
                                         Devolución</div>
 
-                                    <div class="mb-0 font-weight-bold text-gray-800">${request.endDateTime}</div>
+                                    <div class="mb-0 font-weight-bold text-gray-800">${DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT).format(request.endDateTime)}</div>
                                 </div>
                             </div>
 

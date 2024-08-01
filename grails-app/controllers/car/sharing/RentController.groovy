@@ -20,9 +20,11 @@ class RentController extends AbstractController {
         } catch (RentAlreadyActiveException ignored) {
             flash.errorMessage = 'La renta ya se encuentra en curso'
         } catch (DeliveryNotifiedWithoutKilometersException ignored) {
-            flash.errorMessage = 'Es necesario indicar con cuántos kilometros recibiste el auto'
+            flash.errorMessage = 'Es necesario indicar con cuántos kilómetros recibiste el auto'
         } catch (KilometersDeliveredBelowPublishedException ignored) {
             flash.errorMessage = 'El kilometraje entregado no puede ser inferior al publicado'
+        } catch (GuestDoesNotOwnsRequestException ignored) {
+            flash.errorMessage = 'No tenés permiso para realizar esta acción'
         } finally {
             redirect(controller: 'request', action: 'viewRequest', params: [requestId: params.id])
         }
@@ -38,24 +40,50 @@ class RentController extends AbstractController {
         } catch (RentAlreadyFinishedException ignored) {
             flash.errorMessage = 'La renta ya se encuentra finalizada'
         } catch (ReturnNotifiedWithoutKilometersException ignored) {
-            flash.errorMessage = 'Es necesario indicar con cuántos kilometros te devolvieron el auto'
+            flash.errorMessage = 'Es necesario indicar con cuántos kilómetros te devolvieron el auto'
         } catch (KilometersReturnedBelowDeliveredException ignored) {
             flash.errorMessage = 'El kilometraje en la devolución no puede ser inferior al indicado en la entrega'
+        } catch (HostNotFoundException ignored) {
+            flash.errorMessage = 'No tenés permiso para realizar esta acción'
+        } catch (RentNotExistsException ignored) {
+            flash.errorMessage = 'La renta no existe'
         } finally {
             redirect(controller: 'request', action: 'viewRequest', params: [requestId: params.id])
         }
     }
 
     def reportNotDelivered(params) {
-        guestService.reportNotDelivered(Long.valueOf(params.id))
-        flash.successMessage = 'Denuncia realizada'
-        redirect(controller: 'request', action: 'viewRequest', params: [requestId: params.id])
+        try {
+            guestService.reportNotDelivered(Long.valueOf(params.id))
+            flash.successMessage = 'Denuncia realizada'
+        } catch (GuestDoesNotOwnsRequestException ignored) {
+            flash.errorMessage = 'No tenés permiso para realizar esta acción'
+        } catch (RentNotExistsException ignored) {
+            flash.errorMessage = 'La renta no existe'
+        } catch (RentNotScheduledException ignored) {
+            flash.errorMessage = 'Para realizar la denuncia la renta debe estar en estado Programada'
+        } catch (RentUndeliverNotAvailableException ignored) {
+            flash.errorMessage = 'Todavía no se puede realizar la denuncia'
+        } finally {
+            redirect(controller: 'request', action: 'viewRequest', params: [requestId: params.id])
+        }
     }
 
     def reportNotReturned(params) {
-        hostService.reportNotReturned(Long.valueOf(params.id))
-        flash.successMessage = 'Denuncia realizada'
-        redirect(controller: 'request', action: 'viewRequest', params: [requestId: params.id])
+        try {
+            hostService.reportNotReturned(Long.valueOf(params.id))
+            flash.successMessage = 'Denuncia realizada'
+        } catch (RentNotReturnedNotAvailableException ignored) {
+            flash.errorMessage = 'Todavía no se puede realizar la denuncia'
+        } catch (RentIsNotActiveException ignored) {
+            flash.errorMessage = 'La renta debe estar activa para poder realizar la denuncia'
+        } catch (HostNotFoundException ignored) {
+            flash.errorMessage = 'No tenés permiso para realizar esta acción'
+        } catch (RentNotExistsException ignored) {
+            flash.errorMessage = 'La renta no existe'
+        } finally {
+            redirect(controller: 'request', action: 'viewRequest', params: [requestId: params.id])
+        }
     }
 
     def cancelFromGuest(params) {

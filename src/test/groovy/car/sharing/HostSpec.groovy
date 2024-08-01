@@ -8,7 +8,6 @@ import grails.testing.gorm.DomainUnitTest
 import spock.lang.Shared
 import spock.lang.Specification
 
-import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.Period
 
@@ -40,7 +39,7 @@ class HostSpec extends Specification implements DomainUnitTest<Host> {
         user2 = new User(username: "username2", password: "password")
         host = new Host(user: user1)
         host2 = new Host(user: user2)
-        car = new Car(year: 2018, brand: 'Ford', model: 'Focus', variant: '1.6 Titanium', vtvExpirationDate: LocalDate.now() + Period.ofDays(5), kilometers: 50000, licensePlate: "AC933WP")
+        car = new Car(year: 2018, brand: 'Ford', model: 'Focus', variant: '1.6 Titanium', vtvExpirationDate: LocalDateTime.now() + Period.ofDays(5), kilometers: 50000, licensePlate: "AC933WP")
         price = new Price(car.year, car.kilometers)
         publication1 = new Publication(car: car, price: price)
         publication1.id = 1

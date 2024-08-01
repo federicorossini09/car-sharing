@@ -3,13 +3,15 @@ package car.sharing
 import car.sharing.exceptions.CarVtvExpired
 import car.sharing.exceptions.PublicationNotAvailableException
 import car.sharing.exceptions.RentCannotBeActivatedException
+import car.sharing.exceptions.RequestExpiredException
 import grails.testing.gorm.DomainUnitTest
+import org.mockito.MockedStatic
 import spock.lang.Shared
 import spock.lang.Specification
 
-import java.time.LocalDate
-import java.time.LocalDateTime
-import java.time.Period
+import java.time.*
+
+import static org.mockito.Mockito.mockStatic
 
 class PublicationSpec extends Specification implements DomainUnitTest<Publication> {
 
@@ -21,11 +23,17 @@ class PublicationSpec extends Specification implements DomainUnitTest<Publicatio
     User user
     @Shared
     Price price
+    @Shared
+    LocalDateTime now
+
+    static final String FIXED_DATE = "2024-08-01T10:00:00Z"
 
     def setup() {
+        Clock clock = Clock.fixed(Instant.parse(FIXED_DATE), ZoneId.of("UTC"));
+        now = LocalDateTime.now(clock)
         user = new User(username: "username1", password: "password")
         host = new Host(user: user)
-        car = new Car(year: 2018, brand: 'Ford', model: 'Focus', variant: '1.6 Titanium', vtvExpirationDate: LocalDateTime.now() + Period.ofMonths(5), kilometers: 20000, licensePlate: "AC933WP")
+        car = new Car(year: 2018, brand: 'Ford', model: 'Focus', variant: '1.6 Titanium', vtvExpirationDate: now + Period.ofMonths(5), kilometers: 20000, licensePlate: "AC933WP")
         price = new Price(car.year, car.kilometers)
     }
 
@@ -83,7 +91,10 @@ class PublicationSpec extends Specification implements DomainUnitTest<Publicatio
         def guest = new Guest(user: user)
         def request = new Request(publication: newPublication, deliveryPlace: "place1", returnPlace: "place2", startDateTime: LocalDateTime.parse("2024-09-01T00:00:00"), endDateTime: LocalDateTime.parse("2024-09-03T00:00:00"), guest: guest)
         and: "the request is accepted"
-        newPublication.acceptRequest(request)
+        try (MockedStatic<LocalDateTime> mockedStatic = mockStatic(LocalDateTime.class)) {
+            mockedStatic.when(LocalDateTime::now).thenReturn(now)
+            newPublication.acceptRequest(request)
+        }
         then: "the request status is accepted"
         request.status == RequestStatus.ACCEPTED
     }
@@ -96,9 +107,9 @@ class PublicationSpec extends Specification implements DomainUnitTest<Publicatio
         and: "a request is sent by a Guest"
         def guest = new Guest(user: user)
 
-        def date0 = LocalDateTime.parse("2024-01-01T00:00:00")
-        def date1 = LocalDateTime.parse("2024-01-03T00:00:00")
-        def date2 = LocalDateTime.parse("2024-01-04T00:00:00")
+        def date0 = LocalDateTime.parse("2024-09-01T00:00:00")
+        def date1 = LocalDateTime.parse("2024-09-03T00:00:00")
+        def date2 = LocalDateTime.parse("2024-09-04T00:00:00")
 
         def request = new Request(publication: newPublication, deliveryPlace: "place1", returnPlace: "place2", startDateTime: date0, endDateTime: date1, guest: guest)
         newPublication.addToRequests(request)
@@ -197,7 +208,6 @@ class PublicationSpec extends Specification implements DomainUnitTest<Publicatio
         given: "an existing car"
         when: "a publication is created"
         def newPublication = new Publication(host: host, car: car, price: price)
-        def newPublicationIsValid = newPublication.validate()
         and: "two request are sent by a Guest"
         def guest = new Guest(user: user)
         def request1 = new Request(publication: newPublication, deliveryPlace: "place1", returnPlace: "place2", startDateTime: LocalDateTime.parse("2024-09-01T00:00:00"), endDateTime: LocalDateTime.parse("2024-09-03T00:00:00"), guest: guest)
@@ -218,7 +228,7 @@ class PublicationSpec extends Specification implements DomainUnitTest<Publicatio
 
     void "cant requests an expired vtv car date"() {
         given: "an existing publication"
-        def car2 = new Car(year: 2018, brand: 'Ford', model: 'Focus', variant: '1.6 Titanium', vtvExpirationDate: LocalDateTime.now() - Period.ofDays(5), kilometers: 20000, licensePlate: "AC933WP")
+        def car2 = new Car(year: 2018, brand: 'Ford', model: 'Focus', variant: '1.6 Titanium', vtvExpirationDate: now - Period.ofDays(5), kilometers: 20000, licensePlate: "AC933WP")
         def newPublication = new Publication(host: host, car: car2, price: price)
         def user2 = new User(username: "username2", password: "password")
 
@@ -230,5 +240,21 @@ class PublicationSpec extends Specification implements DomainUnitTest<Publicatio
         guest.addRequest(newPublication, "place1", "place2", startDate, returnDate, 20200)
         then:
         thrown CarVtvExpired
+    }
+
+    void "cannot accept expired request"() {
+        given: "an existing car"
+        when: "a publication is created"
+        def newPublication = new Publication(host: host, car: car, price: price)
+        and: "a request is sent by a Guest"
+        def guest = new Guest(user: user)
+        def request = new Request(publication: newPublication, deliveryPlace: "place1", returnPlace: "place2", startDateTime: now - Period.ofDays(5), endDateTime: now - Period.ofDays(3), guest: guest)
+        and: "the request is accepted"
+        try (MockedStatic<LocalDateTime> mockedStatic = mockStatic(LocalDateTime.class)) {
+            mockedStatic.when(LocalDateTime::now).thenReturn(now);
+            newPublication.acceptRequest(request)
+        }
+        then: "an exception is thrown"
+        thrown RequestExpiredException
     }
 }

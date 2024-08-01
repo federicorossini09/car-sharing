@@ -33,7 +33,7 @@ class HostService {
         if (!host)
             throw new HostNotFoundException()
 
-        host.publications
+        host.publications.sort({ r1, r2 -> r1.id == r2.id ? 0 : r1.id < r2.id ? 1 : -1 })
     }
 
     Publication createPublication(params) {
@@ -70,11 +70,10 @@ class HostService {
         host.unpublish(publication)
     }
 
-    //TODO: recibiendo unicamente el request id deberia alcanzar
-    def acceptPublicationRequest(publicationId, requestId) {
+    def acceptPublicationRequest(requestId) {
         def host = getLoggedHost()
-        def publication = publicationService.getById(publicationId)
         def request = requestService.getById(requestId)
+        def publication = request.publication
 
         host.acceptPublicationRequest(publication, request)
 
@@ -84,6 +83,9 @@ class HostService {
 
     def rejectPublicationRequest(Long requestId) {
         def host = getLoggedHost()
+        if (!host) {
+            throw new HostNotFoundException()
+        }
         def request = requestService.getById(requestId)
         host.rejectPublicationRequest(request, request.publication)
     }
@@ -95,7 +97,7 @@ class HostService {
             throw new HostNotFoundException()
         def publication = publicationService.getById(publicationId)
         host.checkHostsPublication(publication)
-        publication.requests
+        publication.requests.sort({ r1, r2 -> r1.id == r2.id ? 0 : r1.id < r2.id ? 1 : -1 })
     }
 
     def isLoggedHostPublication(Long publicationId) {
