@@ -1,6 +1,7 @@
 package car.sharing
 
 import car.sharing.exceptions.KilometersDeliveredBelowPublishedException
+import car.sharing.exceptions.NewKilometersCannotBeLessThanCurrent
 
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -34,5 +35,11 @@ class Car {
 
     def isVtvValidByDate(LocalDateTime endDateTime) {
         return vtvExpirationDate.isBefore(endDateTime)
+    }
+
+    def updateKilometers(Integer kilometers) {
+        if (kilometers < this.kilometers)
+            throw new NewKilometersCannotBeLessThanCurrent()
+        this.setKilometers(kilometers)
     }
 }

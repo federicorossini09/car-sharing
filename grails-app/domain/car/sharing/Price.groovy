@@ -9,7 +9,7 @@ class Price {
     BigDecimal finalValue;
 
     static constraints = {
-        finalValue validator: { val, obj -> val > obj.minimumValue && val < obj.maximumValue }
+        finalValue validator: { val, obj -> val >= obj.minimumValue && val <= obj.maximumValue }
     }
 
     static final BigDecimal BASE_VALUE = 100;
@@ -30,15 +30,27 @@ class Price {
 
     Price(Integer year, Integer kilometers) {
 
-        BigDecimal meanValue = applyYearPenalty(BASE_VALUE, year)
-
-        meanValue = applyKilometersPenalty(meanValue, kilometers)
+        BigDecimal meanValue = calculateMeanValue(year, kilometers)
 
         finalValue = meanValue
 
-        minimumValue = meanValue * MIN_VALUE_FACTOR
+        minimumValue = calculateMinValue(meanValue)
 
-        maximumValue = meanValue * MAX_VALUE_FACTOR
+        maximumValue = calculateMaxValue(meanValue)
+    }
+
+    private static BigDecimal calculateMaxValue(BigDecimal meanValue) {
+        meanValue * MAX_VALUE_FACTOR
+    }
+
+    private static BigDecimal calculateMinValue(BigDecimal meanValue) {
+        meanValue * MIN_VALUE_FACTOR
+    }
+
+    private static BigDecimal calculateMeanValue(Integer year, Integer kilometers) {
+        BigDecimal meanValue = applyYearPenalty(BASE_VALUE, year)
+        meanValue = applyKilometersPenalty(meanValue, kilometers)
+        meanValue
     }
 
     private static BigDecimal applyYearPenalty(BigDecimal value, Integer year) {
@@ -79,5 +91,20 @@ class Price {
 
     def updateFinalValue(BigDecimal newFinalValue) {
         this.setFinalValue(newFinalValue)
+    }
+
+    def update(Integer year, Integer kilometers) {
+        def currentFinalValue = this.finalValue
+
+        def newMeanValue = calculateMeanValue(year, kilometers)
+        def newMinValue = calculateMinValue(newMeanValue)
+        def newMaxValue = calculateMaxValue(newMeanValue)
+
+        if (currentFinalValue > newMaxValue) {
+            this.setFinalValue(newMaxValue)
+        }
+
+        this.setMinimumValue(newMinValue)
+        this.setMaximumValue(newMaxValue)
     }
 }

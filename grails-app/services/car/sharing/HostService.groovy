@@ -114,6 +114,8 @@ class HostService {
             throw new HostNotFoundException()
         def request = requestService.getById(params.id)
         host.reportSuccessfulReturn(request, params.kilometersReturned)
+        request.guest.save(failOnError: true)
+        request.publication.save(failOnError: true)
         request.save(failOnError: true)
     }
 

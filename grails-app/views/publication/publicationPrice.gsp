@@ -25,7 +25,7 @@
                                value="${errors?.getFieldError("price.finalValue")}"/>
                         <div class="form-group">
                             <label for="finalValue">Ingresá el Precio Final</label>
-                            <input type="number"
+                            <input type="number" step="0.01"
                                    class="form-control ${finalValueError ? 'is-invalid' : ''}"
                                    id="finalValue" name="finalValue" value="${values?.finalValue}"
                                    placeholder="Entre los valores mínimo y máximo">

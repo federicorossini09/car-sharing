@@ -107,4 +107,9 @@ class Publication {
     def thereIsAnyActiveRent() {
         return (requests.any { request -> request.rentIsActive() })
     }
+  
+    def updateCar(Integer kilometers) {
+        this.car.updateKilometers(kilometers)
+        this.price.update(this.car.year, kilometers)
+    }
 }

@@ -1,11 +1,10 @@
 package car.sharing
 
-import grails.plugin.springsecurity.SpringSecurityService
+
 import grails.plugin.springsecurity.annotation.Secured
-import grails.plugin.springsecurity.userdetails.GrailsUser
 
 @Secured('isAuthenticated()')
-class HomeController {
+class HomeController extends AbstractController {
 
     PublicationService publicationService
 

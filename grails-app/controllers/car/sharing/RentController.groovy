@@ -4,7 +4,7 @@ import car.sharing.exceptions.*
 import grails.plugin.springsecurity.annotation.Secured
 
 @Secured('isAuthenticated()')
-class RentController {
+class RentController extends AbstractController {
 
     HostService hostService
 

@@ -7,6 +7,16 @@
 
 <body>
 
+<g:if test="${flash.errorMessage}">
+    <div class="row mt-5">
+        <div class="col d-flex justify-content-center">
+            <div class="alert alert-warning" role="alert">
+                ${flash.errorMessage}
+            </div>
+        </div>
+    </div>
+</g:if>
+
 <h3>Autos Publicados</h3>
 <g:if test="${!activePublications.isEmpty()}">
     <div class="row">
