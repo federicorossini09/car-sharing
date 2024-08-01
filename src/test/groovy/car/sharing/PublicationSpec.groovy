@@ -1,5 +1,6 @@
 package car.sharing
 
+import car.sharing.exceptions.CarVtvExpired
 import car.sharing.exceptions.PublicationNotAvailableException
 import car.sharing.exceptions.RentCannotBeActivatedException
 import grails.testing.gorm.DomainUnitTest
@@ -24,7 +25,7 @@ class PublicationSpec extends Specification implements DomainUnitTest<Publicatio
     def setup() {
         user = new User(username: "username1", password: "password")
         host = new Host(user: user)
-        car = new Car(year: 2018, brand: 'Ford', model: 'Focus', variant: '1.6 Titanium', vtvExpirationDate: LocalDate.now() + Period.ofDays(5), kilometers: 20000, licensePlate: "AC933WP")
+        car = new Car(year: 2018, brand: 'Ford', model: 'Focus', variant: '1.6 Titanium', vtvExpirationDate: LocalDateTime.now() + Period.ofMonths(5), kilometers: 20000, licensePlate: "AC933WP")
         price = new Price(car.year, car.kilometers)
     }
 
@@ -212,5 +213,22 @@ class PublicationSpec extends Specification implements DomainUnitTest<Publicatio
         then: "cant activate rent if there is another active rent"
         thrown RentCannotBeActivatedException
 
+    }
+
+
+    void "cant requests an expired vtv car date"() {
+        given: "an existing publication"
+        def car2 = new Car(year: 2018, brand: 'Ford', model: 'Focus', variant: '1.6 Titanium', vtvExpirationDate: LocalDateTime.now() - Period.ofDays(5), kilometers: 20000, licensePlate: "AC933WP")
+        def newPublication = new Publication(host: host, car: car2, price: price)
+        def user2 = new User(username: "username2", password: "password")
+
+        def guest = new Guest(user: user2)
+        when: "i send a request for a date that is expired"
+
+        def startDate = LocalDateTime.parse("2024-10-01T00:00:00")
+        def returnDate = LocalDateTime.parse("2024-10-03T00:00:00")
+        guest.addRequest(newPublication, "place1", "place2", startDate, returnDate, 20200)
+        then:
+        thrown CarVtvExpired
     }
 }

@@ -1,5 +1,6 @@
 package car.sharing
 
+import car.sharing.exceptions.CarVtvExpired
 import car.sharing.exceptions.PublicationNotAvailableException
 
 import java.time.LocalDateTime
@@ -18,6 +19,7 @@ class Publication {
 
     static constraints = {
     }
+
 
     Publication updatePrice(BigDecimal newValue) {
         price.updateFinalValue(newValue)
@@ -62,6 +64,9 @@ class Publication {
     }
 
     boolean areDatesAvailable(LocalDateTime startDate, LocalDateTime endDate) {
+        if (car.isVtvValidByDate(endDate)) {
+            throw new CarVtvExpired()
+        }
         if (requests.every { request -> !request.isOccupying(startDate, endDate) })
             true
         else throw new PublicationNotAvailableException()
