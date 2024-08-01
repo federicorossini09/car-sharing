@@ -76,7 +76,7 @@ class Rent {
 
     }
 
-    boolean cancel() {
+    def cancel() {
         this.setStatus(RentStatus.CANCELED)
     }
 

@@ -39,8 +39,6 @@ class Guest {
     void reportUndelivered(Request request, Publication publication) {
         this.checkOwnsRequest(request)
         request.reportUndelivered()
-        //todo esto de abajo deberia ir en el metodo de arriba
-        publication.penalize(PenaltyReason.NotDeliverOnTime)
     }
 
     void reportSuccessfulDelivery(Request request, @Nullable Integer kilometersDelivered) {

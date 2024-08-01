@@ -61,6 +61,7 @@ class Request {
             throw new RentNotExistsException();
         }
         rent.reportUndelivered(this.startDateTime)
+        this.publication.penalize(PenaltyReason.NotDeliverOnTime)
     }
 
     def reportSuccessfulDeliver(Integer kilometersDelivered) {
@@ -79,8 +80,8 @@ class Request {
         if (!this.rent) {
             throw new RentNotExistsException();
         }
-        guest.penalize(PenaltyReason.NotReturnOnTime)
         rent.reportNotReturned(this.endDateTime)
+        guest.penalize(PenaltyReason.NotReturnOnTime)
     }
 
     def reportSuccessfulReturn(Integer kilometersReturned) {
