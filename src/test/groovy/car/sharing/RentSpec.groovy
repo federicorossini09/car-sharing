@@ -5,15 +5,24 @@ import grails.testing.gorm.DomainUnitTest
 import spock.lang.Shared
 import spock.lang.Specification
 
+import java.time.Clock
+import java.time.Instant
 import java.time.LocalDateTime
+import java.time.ZoneId
 
 class RentSpec extends Specification implements DomainUnitTest<Rent> {
 
     @Shared
     TotalPrice totalPrice
+    @Shared
+    LocalDateTime now
+
+    static final String FIXED_DATE = "2024-08-01T10:00:00Z"
 
     def setup() {
         totalPrice = new TotalPrice(5, 100, 50, false)
+        Clock clock = Clock.fixed(Instant.parse(FIXED_DATE), ZoneId.of("UTC"));
+        now = LocalDateTime.now(clock)
     }
 
     def cleanup() {
@@ -24,8 +33,8 @@ class RentSpec extends Specification implements DomainUnitTest<Rent> {
         def rent = new Rent(totalPrice: totalPrice)
         when: "i ask uf its scheduled or active"
         def isScheduledOrActive = rent.isScheduledOrActive()
-        then: "the dates are not valid"
-        isScheduledOrActive == true
+        then: "is scheduled or active"
+        isScheduledOrActive
     }
 
 
@@ -36,14 +45,14 @@ class RentSpec extends Specification implements DomainUnitTest<Rent> {
         rent.cancel()
         rent.isScheduledOrActive()
         then: "its not neither scheduled nor active"
-        rent.isScheduledOrActive() == false
+        !rent.isScheduledOrActive()
     }
 
     void "activate a rent "() {
         given: "an existing rent"
         def rent = new Rent(totalPrice: totalPrice)
         when: "activate"
-        rent.activate()
+        rent.activate(20000)
         then: "its active"
         rent.isScheduledOrActive()
     }
@@ -56,7 +65,7 @@ class RentSpec extends Specification implements DomainUnitTest<Rent> {
         when: "i report undelivered"
         rent.reportUndelivered(startDate)
         then: "its not neither scheduled nor active"
-        rent.isScheduledOrActive() == false
+        !rent.isScheduledOrActive()
         and: "its reason  is not delivered"
         rent.cancellationReason == CancellationReason.NotDelivered
     }
@@ -69,7 +78,7 @@ class RentSpec extends Specification implements DomainUnitTest<Rent> {
         def returnDate = LocalDateTime.parse("2024-01-03T00:00:00")
         rent.reportNotReturned(returnDate)
         then: "its not neither scheduled nor active"
-        rent.isScheduledOrActive() == false
+        !rent.isScheduledOrActive()
         and: "its reason is not delivered"
         rent.cancellationReason == CancellationReason.NotReturned
     }
@@ -105,7 +114,7 @@ class RentSpec extends Specification implements DomainUnitTest<Rent> {
         def startDate = LocalDateTime.parse("2027-01-01T00:00:00")
         rent.cancelFromGuest(startDate)
         then: "its  cancelled"
-        rent.isCanceled() == true
+        rent.isCanceled()
         and: "the reason is canceled by guest"
         rent.cancellationReason == CancellationReason.CanceledByGuest
     }

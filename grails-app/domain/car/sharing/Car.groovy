@@ -3,12 +3,9 @@ package car.sharing
 import car.sharing.exceptions.KilometersDeliveredBelowPublishedException
 import car.sharing.exceptions.NewKilometersCannotBeLessThanCurrent
 
-import java.time.LocalDate
 import java.time.LocalDateTime
 
 class Car {
-    // todo llevar kms maximos a constante (en una clase)
-    // todo y año
 
     String licensePlate
     Integer year
