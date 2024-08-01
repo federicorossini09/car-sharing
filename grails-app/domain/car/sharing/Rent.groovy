@@ -20,23 +20,26 @@ class Rent {
         cancellationReason nullable: true
     }
 
-    def couldReportUndeliver(LocalDateTime startDateTime) {
+    private static final int WAIT_TIME_TO_REPORT = 1
+    private static final ChronoUnit WAIT_TIME_UNIT_TO_REPORT = ChronoUnit.MINUTES
+
+    def couldReportUndelivered(LocalDateTime startDateTime) {
         def now = LocalDateTime.now()
-        long hourDifference = ChronoUnit.HOURS.between(startDateTime, now)
-        return hourDifference > 2
+        long timeDifference = WAIT_TIME_UNIT_TO_REPORT.between(startDateTime, now)
+        return timeDifference >= WAIT_TIME_TO_REPORT
     }
 
     def couldReportNotReturned(LocalDateTime endDateTime) {
         def now = LocalDateTime.now()
-        long hourDifference = ChronoUnit.HOURS.between(endDateTime, now)
-        return hourDifference > 2
+        long timeDifference = WAIT_TIME_UNIT_TO_REPORT.between(endDateTime, now)
+        return timeDifference >= WAIT_TIME_TO_REPORT
     }
 
     def reportUndelivered(LocalDateTime startDateTime) {
 
         if (!this.isScheduled()) {
             throw new RentNotScheduledException()
-        } else if (!this.couldReportUndeliver(startDateTime)) {
+        } else if (!this.couldReportUndelivered(startDateTime)) {
             throw new RentUndeliverNotAvailableException()
         }
         this.cancel()
